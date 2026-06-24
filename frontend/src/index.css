@@ -24,6 +24,7 @@
   color: #f3f4f6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 18px; /* Scale up entire UI by ~12.5% */
 }
 
 body {
