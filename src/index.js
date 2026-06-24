@@ -7,7 +7,10 @@ const connectDB = require('./config/db');
 const apiRoutes = require('./routes/api');
 
 // Initialize MongoDB connection
-connectDB();
+connectDB().then(() => {
+  const seedDB = require('./config/seeder');
+  seedDB();
+});
 
 const app = express();
 const server = http.createServer(app);
