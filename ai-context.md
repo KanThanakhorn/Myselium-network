@@ -10,8 +10,9 @@ This document tracks the implementation progress of the server-side admin dashbo
 |---|---|---|---|
 | **Phase 1** | **Backend Foundation & Setup** (Express, WebSockets, MongoDB, JWT) | ✅ Completed | June 2026 |
 | **Phase 2** | **Frontend Core Features** (React, Tailwind v4, Redux, Alert System, Layout) | ✅ Completed | June 2026 |
-| **Phase 3** | **Integration & Advanced Visuals** (Real-time Mesh Topology, Charts) | ⏳ Pending | - |
-| **Phase 4** | **Deployment & Simulations** (Simulated fire alerts, production builds) | ⏳ Pending | - |
+| **Phase 3** | **Backend Integration & Simulation** (Models, Controllers, IoT Simulator) | ✅ Completed | June 2026 |
+| **Phase 4** | **Advanced Visualizations & Maps** (Heatmap, D3 Topology Grid) | ⏳ Pending | - |
+| **Phase 5** | **Testing & Deployment** (Unit Tests, production builds, Docker config) | ⏳ Pending | - |
 
 ---
 
@@ -50,18 +51,52 @@ This document tracks the implementation progress of the server-side admin dashbo
 
 ---
 
+## 📡 Phase 3: Backend Integration & Simulation Status
+
+- [x] Mongoose Models Design (`src/models/`):
+  - `User.js` (Role validation, bcrypt password hashing)
+  - `SensorNode.js` (Chiang Mai coordinates, active status, battery, sensor values)
+  - `Alert.js` (Incident thresholds, severity, ranger response details)
+  - `RoutingEvent.js` (Self-healing route changes logs)
+  - `SystemMetrics.js` (Historical packet loss, uptime and latency KPIs)
+- [x] API Controllers & Routes (`src/controllers/` & `src/routes/api.js`):
+  - Auth Controller (Login, generate JWT token, role permissions verification)
+  - Node Controller (Fetch list/details, recalibrate, status toggle, IoT REST Telemetry receiver)
+  - Alert Controller (Query active/history alerts, acknowledge incident, resolve forms logging)
+  - System Controller (Calculate system metrics, battery averages, uptime, and active alerts count)
+- [x] MongoDB Automatic Seeder (`src/config/seeder.js`):
+  - Automatically seeds default users and Doi Suthep forest nodes on database start
+- [x] IoT Telemetry Simulator (`src/simulator.js`):
+  - Zero-dependency node simulator script generating fluctuating sensor streams and injecting alerts
+- [x] Verify API responses and WebSocket client telemetry stream
+
+---
+
 ## 📂 File Structure Updated
 
 ```
 /
 ├── src/
 │   ├── config/
-│   │   └── db.js
+│   │   ├── db.js
+│   │   └── seeder.js
+│   ├── controllers/
+│   │   ├── alertController.js
+│   │   ├── authController.js
+│   │   ├── nodeController.js
+│   │   └── systemController.js
 │   ├── middleware/
 │   │   └── auth.js
+│   ├── models/
+│   │   ├── Alert.js
+│   │   ├── RoutingEvent.js
+│   │   ├── SensorNode.js
+│   │   ├── SystemMetrics.js
+│   │   └── User.js
 │   ├── routes/
 │   │   └── api.js
-│   └── index.js
+│   ├── index.js
+│   └── simulator.js
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
