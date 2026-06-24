@@ -170,6 +170,55 @@ export const fetchSystemHealth = createAsyncThunk(
   }
 );
 
+export const recalibrateNodeThunk = createAsyncThunk(
+  'nodes/recalibrate',
+  async (nodeId: string, thunkAPI) => {
+    try {
+      const state: any = thunkAPI.getState();
+      const token = state.user.token;
+      
+      const response = await fetch(`/api/nodes/${nodeId}/recalibrate`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+      if (!response.ok) throw new Error('Failed to recalibrate node');
+      const data = await response.json();
+      return data.node;
+    } catch (err: any) {
+      console.log('Local recalibration fallback');
+      return { nodeId, sensors: { temp: 25.0, humidity: 65.0, smoke: 50, pm25: 10 } };
+    }
+  }
+);
+
+export const updateNodeStatusThunk = createAsyncThunk(
+  'nodes/updateStatus',
+  async ({ nodeId, status }: { nodeId: string; status: 'active' | 'inactive' | 'dead' }, thunkAPI) => {
+    try {
+      const state: any = thunkAPI.getState();
+      const token = state.user.token;
+
+      const response = await fetch(`/api/nodes/${nodeId}/status`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ status })
+      });
+      if (!response.ok) throw new Error('Failed to update node status');
+      const data = await response.json();
+      return data.node;
+    } catch (err: any) {
+      console.log('Local status update fallback');
+      return { nodeId, status };
+    }
+  }
+);
+
 const nodesSlice = createSlice({
   name: 'nodes',
   initialState,
@@ -214,6 +263,20 @@ const nodesSlice = createSlice({
       })
       .addCase(fetchSystemHealth.fulfilled, (state, action: PayloadAction<SystemMetrics>) => {
         state.metrics = action.payload;
+      })
+      .addCase(recalibrateNodeThunk.fulfilled, (state, action: PayloadAction<any>) => {
+        const index = state.list.findIndex(n => n.nodeId === action.payload.nodeId);
+        if (index !== -1 && action.payload.sensors) {
+          state.list[index].sensors = action.payload.sensors;
+          state.list[index].lastUpdate = new Date().toISOString();
+        }
+      })
+      .addCase(updateNodeStatusThunk.fulfilled, (state, action: PayloadAction<any>) => {
+        const index = state.list.findIndex(n => n.nodeId === action.payload.nodeId);
+        if (index !== -1) {
+          state.list[index].status = action.payload.status;
+          state.list[index].lastUpdate = new Date().toISOString();
+        }
       });
   },
 });

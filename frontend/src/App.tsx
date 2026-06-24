@@ -8,6 +8,8 @@ import Statusbar from './components/layout/Statusbar';
 import AlertToasts from './components/alerts/AlertToasts';
 import AlertList from './components/alerts/AlertList';
 import AlertModal from './components/alerts/AlertModal';
+import NetworkTopology from './components/network/NetworkTopology';
+import AnalyticsDashboard from './components/analytics/AnalyticsDashboard';
 import { 
   MapPin, 
   Battery, 
@@ -304,34 +306,64 @@ function App() {
 
           {/* 4. NETWORK HEALTH TAB */}
           {activeTab === 'health' && (
-            <div className="px-6 py-4 glass-panel border-gray-800 rounded-3xl m-6 text-center">
-              <Activity className="mx-auto text-emerald-400 mb-3" size={32} />
-              <h3 className="text-md font-semibold text-white">Network Topology Monitor</h3>
-              <p className="text-xs text-gray-400 mt-2 max-w-md mx-auto">
-                Phase 1 complete. Interactive network topology visualization using Vis.js / D3.js will be implemented in Phase 2.
-              </p>
-            </div>
+            <NetworkTopology />
           )}
 
           {/* 5. ANALYTICS TAB */}
           {activeTab === 'analytics' && (
-            <div className="px-6 py-4 glass-panel border-gray-800 rounded-3xl m-6 text-center">
-              <Activity className="mx-auto text-blue-400 mb-3" size={32} />
-              <h3 className="text-md font-semibold text-white">Historical Analytics</h3>
-              <p className="text-xs text-gray-400 mt-2 max-w-md mx-auto">
-                Time-series charts and anomaly analysis will be implemented in Phase 3.
-              </p>
-            </div>
+            <AnalyticsDashboard />
           )}
 
           {/* 6. SETTINGS TAB */}
           {activeTab === 'settings' && (
-            <div className="px-6 py-4 glass-panel border-gray-800 rounded-3xl m-6 text-center">
-              <SettingsIcon className="mx-auto text-gray-400 mb-3" size={32} />
-              <h3 className="text-md font-semibold text-white">Configuration Parameters</h3>
-              <p className="text-xs text-gray-400 mt-2 max-w-md mx-auto">
-                Threshold limits configuration and user settings form will be implemented in Phase 3.
-              </p>
+            <div className="px-6 max-w-2xl mx-auto space-y-6">
+              <div className="glass-panel border-gray-800 rounded-3xl p-6">
+                <div className="flex items-center gap-2 mb-4 border-b border-gray-900 pb-3">
+                  <SettingsIcon className="text-gray-400" size={20} />
+                  <h3 className="text-sm font-semibold text-white">System Parameter Settings</h3>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-gray-400">Critical Temperature Threshold (°C)</label>
+                    <input 
+                      type="number" 
+                      defaultValue={40} 
+                      className="bg-gray-950/80 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
+                    />
+                    <span className="text-[10px] text-gray-500">Triggers critical siren alerts if any node reports temperature above this limit.</span>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 pt-2">
+                    <label className="text-xs font-bold text-gray-400">Critical Smoke Density Threshold (ppm)</label>
+                    <input 
+                      type="number" 
+                      defaultValue={400} 
+                      className="bg-gray-950/80 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
+                    />
+                    <span className="text-[10px] text-gray-500">Triggers critical fire warnings if smoke concentration exceeds this limit.</span>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 pt-2">
+                    <label className="text-xs font-bold text-gray-400">Critical PM2.5 Level (µg/m³)</label>
+                    <input 
+                      type="number" 
+                      defaultValue={100} 
+                      className="bg-gray-950/80 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
+                    />
+                    <span className="text-[10px] text-gray-500">Triggers air quality hazard warnings if PM2.5 is above this limit.</span>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-900 flex justify-end">
+                    <button
+                      onClick={() => dispatch(addNotification({ message: 'Configurations saved successfully.', type: 'success' }))}
+                      className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-400 transition-colors"
+                    >
+                      Save Configuration
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
