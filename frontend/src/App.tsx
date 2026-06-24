@@ -94,6 +94,28 @@ function App() {
         {/* Header Layout */}
         <Header socketConnected={isConnected} />
 
+        {/* Emergency Alert Banner */}
+        {activeAlerts.some(a => a.severity === 'critical' && a.status === 'active') && (
+          <div className="bg-red-500/15 border-y border-red-500/20 px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+              </span>
+              <span className="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
+                <AlertOctagon size={14} className="text-red-500" />
+                Emergency Alert: Active Fire/Smoke detected at Doi Suthep sensors!
+              </span>
+            </div>
+            <button 
+              onClick={handleAcknowledgeAll}
+              className="text-[10px] font-bold uppercase px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg border border-red-500/30 transition-colors cursor-pointer"
+            >
+              Acknowledge All
+            </button>
+          </div>
+        )}
+
         {/* Statusbar KPI indicators */}
         <Statusbar />
 

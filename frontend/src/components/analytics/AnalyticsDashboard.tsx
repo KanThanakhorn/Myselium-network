@@ -384,11 +384,24 @@ export default function AnalyticsDashboard() {
                       <circle
                         cx={pos.x}
                         cy={pos.y}
-                        r="6"
+                        r="4"
                         fill="none"
                         stroke="#ef4444"
-                        className="animate-ping"
-                      />
+                        strokeWidth="1.5"
+                      >
+                        <animate
+                          attributeName="r"
+                          values="4;16"
+                          dur="2s"
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="opacity"
+                          values="0.8;0"
+                          dur="2s"
+                          repeatCount="indefinite"
+                        />
+                      </circle>
                     )}
                     <circle
                       cx={pos.x}

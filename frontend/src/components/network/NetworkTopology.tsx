@@ -260,16 +260,27 @@ export default function NetworkTopology() {
                     </filter>
                   </defs>
 
-                  {/* Pulsing ring for nodes in active fire alert state */}
+                  {/* Pulsing ring for nodes in active fire alert state or selection */}
                   {(hasAlert || isSelected) && (
                     <circle
-                      r={radius + 8}
+                      r={radius}
                       fill="none"
                       stroke={hasAlert ? '#ef4444' : '#60a5fa'}
-                      strokeWidth="1"
-                      className="animate-ping"
-                      style={{ transformOrigin: 'center', animationDuration: '2s' }}
-                    />
+                      strokeWidth="1.5"
+                    >
+                      <animate
+                        attributeName="r"
+                        values={`${radius};${radius + 15}`}
+                        dur="2s"
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="opacity"
+                        values="0.8;0"
+                        dur="2s"
+                        repeatCount="indefinite"
+                      />
+                    </circle>
                   )}
 
                   {/* Outer selection ring */}
