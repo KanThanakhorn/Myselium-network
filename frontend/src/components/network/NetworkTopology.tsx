@@ -11,7 +11,6 @@ import {
   Signal, 
   RefreshCw, 
   Power,
-  RotateCcw,
   Workflow
 } from 'lucide-react';
 
@@ -43,7 +42,6 @@ export default function NetworkTopology() {
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [nodePositions, setNodePositions] = useState<Record<string, NodePosition>>({});
-  const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null);
   const [isCalibrating, setIsCalibrating] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -74,51 +72,7 @@ export default function NetworkTopology() {
     setNodePositions(initialPositions);
   }, [nodes]);
 
-  // Reset positions to default geographical layout
-  const handleResetPositions = () => {
-    const minLat = 18.790;
-    const maxLat = 18.815;
-    const minLng = 98.910;
-    const maxLng = 98.960;
 
-    const initialPositions: Record<string, NodePosition> = {};
-    
-    nodes.forEach((node) => {
-      const x = ((node.location.lng - minLng) / (maxLng - minLng)) * (width - 160) + 80;
-      const y = height - (((node.location.lat - minLat) / (maxLat - minLat)) * (height - 160) + 80);
-      initialPositions[node.nodeId] = { x, y };
-    });
-
-    setNodePositions(initialPositions);
-    dispatch(addNotification({ message: 'Topology layout reset successfully', type: 'info' }));
-  };
-
-  // Node Drag events
-  const handleMouseDown = (nodeId: string) => {
-    setDraggedNodeId(nodeId);
-    setSelectedNodeId(nodeId);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    if (!draggedNodeId || !svgRef.current) return;
-
-    const rect = svgRef.current.getBoundingClientRect();
-    // Normalize coordinates relative to SVG viewBox size
-    const x = ((e.clientX - rect.left) / rect.width) * width;
-    const y = ((e.clientY - rect.top) / rect.height) * height;
-
-    setNodePositions(prev => ({
-      ...prev,
-      [draggedNodeId]: { 
-        x: Math.max(20, Math.min(width - 20, x)), 
-        y: Math.max(20, Math.min(height - 20, y)) 
-      }
-    }));
-  };
-
-  const handleMouseUp = () => {
-    setDraggedNodeId(null);
-  };
 
   // Action: Recalibrate Node
   const handleRecalibrate = async (nodeId: string) => {
@@ -160,15 +114,9 @@ export default function NetworkTopology() {
             Doi Suthep Mesh Network Topology Monitor
           </h2>
           <p className="text-xs text-gray-400 mt-1">
-            Real-time wireless communication graph. Drag nodes to customize arrangement.
+            Real-time wireless communication graph mapping actual physical node coordinates.
           </p>
         </div>
-        <button
-          onClick={handleResetPositions}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 transition-colors self-start sm:self-center"
-        >
-          <RotateCcw size={14} /> Reset Layout
-        </button>
       </div>
 
       {/* Main Grid: Interactive Canvas & Information Card */}
@@ -207,10 +155,7 @@ export default function NetworkTopology() {
           <svg
             ref={svgRef}
             viewBox={`0 0 ${width} ${height}`}
-            className="w-full aspect-[8/5] select-none cursor-grab active:cursor-grabbing"
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            className="w-full aspect-[8/5] select-none"
           >
             {/* Draw grid lines background */}
             <defs>
@@ -305,7 +250,7 @@ export default function NetworkTopology() {
                 <g
                   key={node.nodeId}
                   transform={`translate(${pos.x}, ${pos.y})`}
-                  onMouseDown={() => handleMouseDown(node.nodeId)}
+                  onClick={() => setSelectedNodeId(node.nodeId)}
                   className="cursor-pointer group"
                 >
                   <defs>
