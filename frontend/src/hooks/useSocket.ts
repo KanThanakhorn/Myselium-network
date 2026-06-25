@@ -56,10 +56,6 @@ export const useSocket = () => {
     socket.on('routes_update', (routesData: any) => {
       console.log('Dynamic routes update received:', routesData);
       dispatch(updateRealtimeRoutes(routesData));
-      dispatch(addNotification({
-        message: 'Mycelium network topology self-healed and rerouted.',
-        type: 'success'
-      }));
     });
 
     // New fire/smoke alert detected!
