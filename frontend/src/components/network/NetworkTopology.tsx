@@ -375,8 +375,8 @@ export default function NetworkTopology() {
 
                 const isSelected = selectedNodeId === node.nodeId;
 
-                // Node radius proportional to battery level (minimum 10px, max 16px)
-                const radius = 10 + (node.battery / 100) * 5;
+                // Node radius proportional to battery level (minimum 6px, max 9px)
+                const radius = 6 + (node.battery / 100) * 3;
 
                 return (
                   <g
