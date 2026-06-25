@@ -286,6 +286,17 @@ export default function NetworkTopology() {
 
             {/* Transform Group for Zoom & Pan */}
             <g transform={`translate(${offset.x}, ${offset.y}) scale(${scale})`}>
+              {/* Satellite Background Image */}
+              <image 
+                href="/doi_suthep_satellite.png" 
+                x="0" 
+                y="0" 
+                width={width} 
+                height={height} 
+                opacity="0.45" 
+                style={{ pointerEvents: 'none' }}
+              />
+
               {/* 1. Draw Mesh connections */}
               {activeLinks.map((link, idx) => {
                 const p1 = nodePositions[link.source];
