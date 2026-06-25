@@ -27,7 +27,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
     const rangerId = currentUser?.name || 'ranger_somchai';
     dispatch(acknowledgeAlert({ alertId: alert.alertId, rangerId }) as any);
     dispatch(addNotification({
-      message: `Alert ${alert.alertId} acknowledged`,
+      message: `รับทราบการแจ้งเตือน ${alert.alertId} แล้ว`,
       type: 'success',
     }));
   };
@@ -44,12 +44,22 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
     }) as any);
 
     dispatch(addNotification({
-      message: `Alert ${alert.alertId} marked as resolved`,
+      message: `บันทึกการแก้ไขการแจ้งเตือน ${alert.alertId} เรียบร้อยแล้ว`,
       type: 'success',
     }));
     
     setIsResolving(false);
     onClose();
+  };
+
+  const getSensorLabel = (sensor: string) => {
+    switch (sensor) {
+      case 'temperature': return 'อุณหภูมิ';
+      case 'smoke': return 'ควันไฟ';
+      case 'humidity': return 'ความชื้น';
+      case 'battery': return 'แบตเตอรี่';
+      default: return sensor;
+    }
   };
 
   return (
@@ -72,9 +82,9 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
               <ShieldAlert size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white m-0">Alert Details: {alert.alertId}</h2>
+              <h2 className="text-lg font-bold text-white m-0">รายละเอียดการแจ้งเตือน: {alert.alertId}</h2>
               <span className="text-[10px] text-gray-500 font-mono tracking-wider">
-                SOURCE NODE: {alert.sourceNodeId}
+                โหนดต้นทาง: {alert.sourceNodeId}
               </span>
             </div>
           </div>
@@ -97,11 +107,11 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
                 <MapPin size={18} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-mono text-gray-500 uppercase">Geographic Location</span>
+                <span className="text-[10px] font-mono text-gray-500 uppercase">พิกัดทางภูมิศาสตร์</span>
                 <span className="text-sm font-semibold text-white mt-1">
                   ({alert.location.lat.toFixed(5)}, {alert.location.lng.toFixed(5)})
                 </span>
-                <span className="text-xs text-gray-400 mt-1">Doi Suthep forest area</span>
+                <span className="text-xs text-gray-400 mt-1">พื้นที่ป่าดอยสุเทพ</span>
               </div>
             </div>
 
@@ -111,7 +121,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
                 <Clock size={18} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-mono text-gray-500 uppercase">Detection Time</span>
+                <span className="text-[10px] font-mono text-gray-500 uppercase">เวลาที่ตรวจพบ</span>
                 <span className="text-sm font-semibold text-white mt-1">
                   {new Date(alert.timestamp).toLocaleTimeString()}
                 </span>
@@ -124,12 +134,12 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
 
           {/* Sensor readings section */}
           <div className="bg-gray-950/40 border border-gray-800/80 rounded-2xl p-5">
-            <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-4">Sensor Readings</h3>
+            <h3 className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-4">ข้อมูลจากเซนเซอร์</h3>
             <div className="flex flex-col gap-4">
               <div>
                 <div className="flex items-center justify-between text-xs font-semibold mb-1">
-                  <span className="text-gray-300 capitalize">{alert.sensorType} Reading</span>
-                  <span className="text-white font-mono">{alert.value} / {alert.threshold} limit</span>
+                  <span className="text-gray-300 capitalize">ค่าที่วัดได้จากเซนเซอร์ {getSensorLabel(alert.sensorType)}</span>
+                  <span className="text-white font-mono">{alert.value} / {alert.threshold} (ขีดจำกัด)</span>
                 </div>
                 {/* Visual bar */}
                 <div className="w-full h-2.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
@@ -150,7 +160,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
             <div className="relative">
               <div className="absolute -left-[31px] top-0 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-dark-900"></div>
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-white">Fire incident detected by {alert.sourceNodeId}</span>
+                <span className="text-xs font-semibold text-white">ตรวจพบเหตุไฟป่าโดยโหนด {alert.sourceNodeId}</span>
                 <span className="text-[10px] font-mono text-gray-500 mt-0.5">
                   {new Date(alert.timestamp).toLocaleString()}
                 </span>
@@ -165,8 +175,8 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
               <div className="flex flex-col">
                 <span className={`text-xs font-semibold ${isAcknowledged ? 'text-white' : 'text-gray-500'}`}>
                   {isAcknowledged 
-                    ? `Acknowledged by ranger: ${alert.acknowledgedBy}` 
-                    : 'Awaiting Ranger Acknowledgment'}
+                    ? `รับทราบเหตุแล้วโดยเจ้าหน้าที่: ${alert.acknowledgedBy}` 
+                    : 'กำลังรอเจ้าหน้าที่รับทราบเหตุ'}
                 </span>
                 {alert.acknowledgedAt && (
                   <span className="text-[10px] font-mono text-gray-500 mt-0.5">
@@ -184,8 +194,8 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
               <div className="flex flex-col">
                 <span className={`text-xs font-semibold ${isResolved ? 'text-white' : 'text-gray-500'}`}>
                   {isResolved 
-                    ? `Resolved by ranger: ${alert.responseDetails?.rangerId}` 
-                    : 'Awaiting Resolution'}
+                    ? `แก้ไขเหตุเรียบร้อยแล้วโดยเจ้าหน้าที่: ${alert.responseDetails?.rangerId}` 
+                    : 'กำลังรอดำเนินการแก้ไข'}
                 </span>
                 {alert.responseDetails && (
                   <>
@@ -205,9 +215,9 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
           {/* Resolve Form if Acknowledged and not resolved */}
           {isAcknowledged && !isResolved && isResolving && (
             <form onSubmit={handleResolveSubmit} className="bg-gray-950/40 border border-emerald-500/20 rounded-2xl p-4 space-y-3 animate-in slide-in-from-top-4 duration-200">
-              <label className="text-xs font-semibold text-emerald-400 block">Incident Resolution Report</label>
+              <label className="text-xs font-semibold text-emerald-400 block">รายงานผลการเข้าระงับเหตุ</label>
               <textarea
-                placeholder="Describe actions taken (e.g. Dispatched fire truck, cleared dry leaves...)"
+                placeholder="ระบุวิธีการเข้าระงับเหตุ (เช่น ดับไฟเสร็จสิ้น, ปัดกวาดแนวกันไฟ...)"
                 value={actionTaken}
                 onChange={(e) => setActionTaken(e.target.value)}
                 required
@@ -219,13 +229,13 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
                   onClick={() => setIsResolving(false)}
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-800 text-gray-400 hover:text-white"
                 >
-                  Cancel
+                  ยกเลิก
                 </button>
                 <button
                   type="submit"
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-dark-950 hover:bg-emerald-400 transition-colors"
                 >
-                  Confirm Resolution
+                  ยืนยันการแก้ไขเสร็จสิ้น
                 </button>
               </div>
             </form>
@@ -239,7 +249,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-xs font-semibold border border-gray-800 text-gray-400 hover:text-white hover:bg-gray-800/40 transition-colors"
           >
-            Close
+            ปิดหน้าต่าง
           </button>
           
           {alert.status === 'active' && (
@@ -249,7 +259,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
                   onClick={handleAcknowledge}
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-500 text-white hover:bg-blue-400 transition-colors flex items-center gap-1.5"
                 >
-                  <CheckCircle size={14} /> Acknowledge Alert
+                  <CheckCircle size={14} /> รับทราบเหตุ
                 </button>
               ) : (
                 !isResolving && (
@@ -257,7 +267,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
                     onClick={() => setIsResolving(true)}
                     className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-dark-950 hover:bg-emerald-400 transition-colors flex items-center gap-1.5"
                   >
-                    <CheckCircle size={14} /> Resolve Incident
+                    <CheckCircle size={14} /> ลงบันทึกแก้ไขเหตุ
                   </button>
                 )
               )}

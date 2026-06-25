@@ -32,7 +32,7 @@ export const useSocket = () => {
       socket.emit('join_dashboard');
       
       dispatch(addNotification({
-        message: 'Connected to Mycelium network telemetry',
+        message: 'เชื่อมต่อกับระบบเครือข่ายเซนเซอร์ Mycelium แล้ว',
         type: 'info'
       }));
     });
@@ -41,7 +41,7 @@ export const useSocket = () => {
       console.log('WebSocket disconnected:', reason);
       setIsConnected(false);
       dispatch(addNotification({
-        message: 'Disconnected from Mycelium network telemetry',
+        message: 'สัญญาณเชื่อมต่อขาดหายจากเครือข่ายเซนเซอร์ Mycelium',
         type: 'warning'
       }));
     });
@@ -65,7 +65,7 @@ export const useSocket = () => {
       
       // Trigger user toast notification
       dispatch(addNotification({
-        message: `⚠️ CRITICAL: Fire/Smoke detected at ${alertData.sourceNodeId}!`,
+        message: `⚠️ วิกฤต: ตรวจพบไฟไหม้/กลุ่มควันหนาแน่น ที่จุด ${alertData.sourceNodeId}!`,
         type: alertData.severity === 'critical' ? 'error' : 'warning',
       }));
     });

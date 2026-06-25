@@ -68,9 +68,9 @@ export default function NetworkTopology() {
     setIsCalibrating(true);
     try {
       await dispatch(recalibrateNodeThunk(nodeId)).unwrap();
-      dispatch(addNotification({ message: `Node ${nodeId} successfully recalibrated`, type: 'success' }));
+      dispatch(addNotification({ message: `ปรับเทียบเซนเซอร์ของโหนด ${nodeId} สำเร็จแล้ว`, type: 'success' }));
     } catch (err: any) {
-      dispatch(addNotification({ message: err || 'Recalibration failed', type: 'error' }));
+      dispatch(addNotification({ message: err || 'การปรับเทียบเซนเซอร์ล้มเหลว', type: 'error' }));
     } finally {
       setIsCalibrating(false);
     }
@@ -82,11 +82,11 @@ export default function NetworkTopology() {
     try {
       await dispatch(updateNodeStatusThunk({ nodeId: node.nodeId, status: nextStatus })).unwrap();
       dispatch(addNotification({ 
-        message: `Node ${node.nodeId} status updated to ${nextStatus.toUpperCase()}`, 
+        message: `อัปเดตสถานะโหนด ${node.nodeId} เป็น ${nextStatus === 'active' ? 'เปิดทำงาน' : 'ปิดทำงาน'} เรียบร้อยแล้ว`, 
         type: 'success' 
       }));
     } catch (err: any) {
-      dispatch(addNotification({ message: err || 'Status update failed', type: 'error' }));
+      dispatch(addNotification({ message: err || 'การอัปเดตสถานะเซนเซอร์ล้มเหลว', type: 'error' }));
     }
   };
 
@@ -100,10 +100,10 @@ export default function NetworkTopology() {
         <div>
           <h2 className="text-sm font-semibold text-white flex items-center gap-2">
             <Workflow className="text-emerald-400" size={18} />
-            Doi Suthep Mesh Network Topology Monitor
+            ระบบติดตามโครงข่ายวิทยุสื่อสารดอยสุเทพ
           </h2>
           <p className="text-xs text-gray-400 mt-1">
-            Real-time wireless communication graph mapping actual physical node coordinates.
+            กราฟเชื่อมต่อเครือข่ายไร้สายแบบเรียลไทม์ตามพิกัดติดตั้งทางภูมิศาสตร์จริง
           </p>
         </div>
       </div>
@@ -116,27 +116,27 @@ export default function NetworkTopology() {
           
           {/* Canvas Legend */}
           <div className="absolute top-4 left-4 bg-gray-950/80 border border-gray-800/80 rounded-2xl p-3 flex flex-col gap-1.5 text-[10px] text-gray-400 backdrop-blur-md z-10 shadow-lg">
-            <span className="font-bold text-white mb-0.5">Status Legend</span>
+            <span className="font-bold text-white mb-0.5">คำอธิบายสถานะ</span>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
-              <span>Active (Good Battery)</span>
+              <span>ออนไลน์ปกติ (แบตเตอรี่ดี)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"></span>
-              <span>Low Battery (&lt; 30%)</span>
+              <span>แบตเตอรี่ต่ำ (&lt; 30%)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
-              <span>Offline / Fire Alert</span>
+              <span>ออฟไลน์ / ตรวจพบไฟไหม้</span>
             </div>
-            <div className="border-t border-gray-900 my-1 pt-1 font-bold text-white">Route Links</div>
+            <div className="border-t border-gray-900 my-1 pt-1 font-bold text-white">ลิงก์เส้นทางวิทยุ</div>
             <div className="flex items-center gap-2">
               <span className="w-4 h-0.5 bg-emerald-500"></span>
-              <span>Primary Path</span>
+              <span>เส้นทางหลัก (Primary)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-4 h-0.5 border-t border-dashed border-emerald-500/50"></span>
-              <span>Backup Path</span>
+              <span>เส้นทางสำรอง (Backup)</span>
             </div>
           </div>
 
@@ -316,49 +316,49 @@ export default function NetworkTopology() {
                   <span className="text-lg font-bold text-white font-mono">{selectedNodeObj.nodeId}</span>
                   {selectedNodeObj.status === 'active' ? (
                     <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      ONLINE
+                      ออนไลน์
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-900 text-gray-500 border border-gray-800">
-                      OFFLINE
+                      ออฟไลน์
                     </span>
                   )}
                 </div>
 
                 <p className="text-xs text-gray-400 flex items-center gap-1">
                   <MapPin size={12} className="text-emerald-400" />
-                  {selectedNodeObj.metadata?.location_name || 'Forest Area Watchpoint'}
+                  {selectedNodeObj.metadata?.location_name || 'จุดเฝ้าระวังพื้นที่ป่า'}
                 </p>
                 <span className="text-[10px] text-gray-500 font-mono block">
-                  Location Coordinates: {selectedNodeObj.location.lat.toFixed(5)}, {selectedNodeObj.location.lng.toFixed(5)}
+                  พิกัดตำแหน่ง: {selectedNodeObj.location.lat.toFixed(5)}, {selectedNodeObj.location.lng.toFixed(5)}
                 </span>
               </div>
 
               {/* Metrics gauges */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-950/40 border border-gray-800/60 rounded-2xl p-3">
-                  <span className="text-[9px] font-mono text-gray-500 uppercase">Temperature</span>
+                  <span className="text-[9px] font-mono text-gray-500 uppercase">อุณหภูมิ</span>
                   <div className="text-sm font-bold text-white mt-1">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.temp.toFixed(1)}°C`}
                   </div>
                 </div>
 
                 <div className="bg-gray-950/40 border border-gray-800/60 rounded-2xl p-3">
-                  <span className="text-[9px] font-mono text-gray-500 uppercase">Smoke Density</span>
+                  <span className="text-[9px] font-mono text-gray-500 uppercase">ความหนาแน่นควัน</span>
                   <div className="text-sm font-bold text-white mt-1">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.smoke} ppm`}
                   </div>
                 </div>
 
                 <div className="bg-gray-950/40 border border-gray-800/60 rounded-2xl p-3">
-                  <span className="text-[9px] font-mono text-gray-500 uppercase">Humidity</span>
+                  <span className="text-[9px] font-mono text-gray-500 uppercase">ความชื้น</span>
                   <div className="text-sm font-bold text-white mt-1">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.humidity.toFixed(0)}%`}
                   </div>
                 </div>
 
                 <div className="bg-gray-950/40 border border-gray-800/60 rounded-2xl p-3 flex flex-col justify-between">
-                  <span className="text-[9px] font-mono text-gray-500 uppercase">Battery Level</span>
+                  <span className="text-[9px] font-mono text-gray-500 uppercase">ระดับแบตเตอรี่</span>
                   <div className="text-sm font-bold text-white mt-1 flex items-center gap-1">
                     <Battery size={14} className={selectedNodeObj.battery < 20 ? 'text-red-400 animate-pulse' : 'text-emerald-400'} />
                     {selectedNodeObj.battery}%
@@ -368,22 +368,22 @@ export default function NetworkTopology() {
 
               {/* Link Details */}
               <div className="space-y-2 border-t border-gray-900 pt-4">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Signal Quality Link</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">สัญญาณวิทยุเชื่อมต่อ</span>
                 <div className="flex justify-between text-xs font-mono text-gray-300">
                   <span className="flex items-center gap-1"><Signal size={12} /> RSSI</span>
                   <span>{selectedNodeObj.rssi} dBm</span>
                 </div>
                 <div className="flex justify-between text-xs font-mono text-gray-300">
-                  <span className="flex items-center gap-1"><Activity size={12} /> Link Quality (LQI)</span>
+                  <span className="flex items-center gap-1"><Activity size={12} /> คุณภาพสัญญาณ (LQI)</span>
                   <span>{selectedNodeObj.lqi} / 255</span>
                 </div>
               </div>
 
               {/* Mycelium Weight Details */}
               <div className="space-y-2 border-t border-gray-900 pt-4">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Mycelium Routing Engine</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">ระบบหาเส้นทาง Mycelium</span>
                 <div className="flex justify-between text-xs font-mono text-gray-300">
-                  <span className="flex items-center gap-1"><Workflow size={12} className="text-emerald-400" /> Decision Weight</span>
+                  <span className="flex items-center gap-1"><Workflow size={12} className="text-emerald-400" /> ค่าน้ำหนักตัดสินใจ (Weight)</span>
                   <span className="text-emerald-400 font-bold">
                     {weights && weights[selectedNodeObj.nodeId] 
                       ? weights[selectedNodeObj.nodeId].toFixed(3) 
@@ -401,7 +401,7 @@ export default function NetworkTopology() {
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold bg-gray-850 hover:bg-gray-850 text-white border border-gray-800 hover:border-gray-700 transition-colors disabled:opacity-50"
                   >
                     <RefreshCw className={isCalibrating ? 'animate-spin' : ''} size={14} /> 
-                    {isCalibrating ? 'Calibrating...' : 'Recalibrate'}
+                    {isCalibrating ? 'กำลังปรับเทียบ...' : 'ปรับเทียบใหม่'}
                   </button>
 
                   <button
@@ -413,12 +413,12 @@ export default function NetworkTopology() {
                     }`}
                   >
                     <Power size={14} /> 
-                    {selectedNodeObj.status === 'active' ? 'Deactivate' : 'Activate'}
+                    {selectedNodeObj.status === 'active' ? 'ปิดการทำงาน' : 'เปิดการทำงาน'}
                   </button>
                 </div>
               ) : (
                 <div className="p-3 bg-gray-950/20 border border-gray-800 rounded-xl text-[10px] text-gray-500 leading-normal mt-4">
-                  🔒 Log in as Ranger or Administrator to calibrate sensor nodes or change node states.
+                  🔒 ล็อกอินในฐานะเจ้าหน้าที่หรือผู้ดูแลระบบเพื่อปรับเทียบเซนเซอร์หรือเปลี่ยนสถานะอุปกรณ์
                 </div>
               )}
 
@@ -426,9 +426,9 @@ export default function NetworkTopology() {
           ) : (
             <div className="flex flex-col items-center justify-center text-center my-auto space-y-3">
               <Workflow className="text-gray-650" size={32} />
-              <div className="text-xs text-gray-400 font-semibold">Select a Node to Inspect</div>
+              <div className="text-xs text-gray-400 font-semibold">เลือกโหนดเพื่อตรวจสอบ</div>
               <p className="text-[10px] text-gray-500 max-w-[200px] leading-relaxed">
-                Click on any node in the topology mesh map to view its active sensor readings, coordinates, and signal details.
+                คลิกที่จุดโหนดเซนเซอร์บนแผนที่เพื่อดูข้อมูลค่าเซนเซอร์ พิกัด และคุณภาพสัญญาณแบบสด
               </p>
             </div>
           )}

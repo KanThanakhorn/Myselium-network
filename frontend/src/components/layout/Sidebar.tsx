@@ -21,12 +21,12 @@ const Sidebar: React.FC = () => {
   const activeAlerts = useSelector((state: RootState) => state.alerts.active.length);
 
   const menuItems = [
-    { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { id: 'alerts', label: 'Alerts', icon: AlertTriangle, badge: activeAlerts > 0 ? activeAlerts : undefined },
-    { id: 'nodes', label: 'Nodes & Status', icon: Cpu },
-    { id: 'health', label: 'Network Health', icon: Activity },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon },
+    { id: 'overview', label: 'ภาพรวม', icon: LayoutDashboard },
+    { id: 'alerts', label: 'การแจ้งเตือน', icon: AlertTriangle, badge: activeAlerts > 0 ? activeAlerts : undefined },
+    { id: 'nodes', label: 'อุปกรณ์และสถานะ', icon: Cpu },
+    { id: 'health', label: 'โครงข่ายและเส้นทาง', icon: Activity },
+    { id: 'analytics', label: 'กราฟสถิติและข้อมูล', icon: BarChart3 },
+    { id: 'settings', label: 'ตั้งค่าระบบ', icon: SettingsIcon },
   ];
 
   return (

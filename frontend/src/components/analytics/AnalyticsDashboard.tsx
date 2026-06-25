@@ -16,7 +16,7 @@ const generateHistoricalData = (daysCount: number) => {
   const now = new Date();
   for (let i = daysCount - 1; i >= 0; i--) {
     const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const dateString = date.toLocaleDateString('th-TH', { month: 'short', day: 'numeric' });
     
     // Simulate gradual fluctuations with a few fire anomalies
     let temp = 28 + Math.sin(i / 3) * 3 + Math.random() * 1.5;
@@ -95,8 +95,8 @@ export default function AnalyticsDashboard() {
 
   // Signal dead zones recommendations
   const deadZones = [
-    { name: 'Doi Pui Ridge Gap', severity: 'High', recommendation: 'Deploy node between Node-05 and Node-08' },
-    { name: 'South Siri Bhum Valley', severity: 'Medium', recommendation: 'Deploy node near Node-06 path' }
+    { name: 'สันเขาดอยปุย', severity: 'High', recommendation: 'ควรติดตั้งโหนดเพิ่มเติมระหว่าง Node-05 และ Node-08' },
+    { name: 'หุบเขาสิริภูมิฝั่งใต้', severity: 'Medium', recommendation: 'ควรติดตั้งโหนดเพิ่มเติมใกล้แนวสัญญาณ Node-06' }
   ];
 
   return (
@@ -112,9 +112,9 @@ export default function AnalyticsDashboard() {
             <div>
               <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
                 <TrendingUp className="text-blue-400" size={18} />
-                Sensor Trends & Historical Analytics
+                แนวโน้มและข้อมูลการวัดของเซนเซอร์ย้อนหลัง
               </h3>
-              <p className="text-xs text-gray-400 mt-0.5">Forest fire trigger indicators history</p>
+              <p className="text-xs text-gray-400 mt-0.5">ประวัติค่าดัชนีตรวจจับความเสี่ยงในการเกิดไฟป่า</p>
             </div>
             
             <div className="flex items-center gap-4">
@@ -130,7 +130,7 @@ export default function AnalyticsDashboard() {
                         : 'text-gray-400 hover:text-white'
                     }`}
                   >
-                    {sensor === 'temp' ? 'Temperature' : sensor === 'smoke' ? 'Smoke' : 'Humidity'}
+                    {sensor === 'temp' ? 'อุณหภูมิ' : sensor === 'smoke' ? 'ควันไฟ' : 'ความชื้น'}
                   </button>
                 ))}
               </div>
@@ -143,7 +143,7 @@ export default function AnalyticsDashboard() {
                     timeRange === '7d' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  7D
+                  7 วัน
                 </button>
                 <button
                   onClick={() => setTimeRange('30d')}
@@ -151,7 +151,7 @@ export default function AnalyticsDashboard() {
                     timeRange === '30d' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  30D
+                  30 วัน
                 </button>
               </div>
             </div>
@@ -306,9 +306,9 @@ export default function AnalyticsDashboard() {
                   {points[hoveredDataIndex].data.date}
                 </span>
                 <span className="font-mono mt-0.5">
-                  {selectedSensor === 'temp' && `Temperature: ${points[hoveredDataIndex].data.temp.toFixed(1)}°C`}
-                  {selectedSensor === 'smoke' && `Smoke Density: ${points[hoveredDataIndex].data.smoke.toFixed(0)} ppm`}
-                  {selectedSensor === 'humidity' && `Humidity: ${points[hoveredDataIndex].data.humidity.toFixed(0)}%`}
+                  {selectedSensor === 'temp' && `อุณหภูมิ: ${points[hoveredDataIndex].data.temp.toFixed(1)}°C`}
+                  {selectedSensor === 'smoke' && `ความหนาแน่นควัน: ${points[hoveredDataIndex].data.smoke.toFixed(0)} ppm`}
+                  {selectedSensor === 'humidity' && `ความชื้น: ${points[hoveredDataIndex].data.humidity.toFixed(0)}%`}
                 </span>
               </div>
             )}
@@ -322,9 +322,9 @@ export default function AnalyticsDashboard() {
           <div>
             <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
               <Map className="text-emerald-400" size={18} />
-              Geospatial Signal Coverage
+              ขอบเขตความครอบคลุมของสัญญาณไร้สาย
             </h3>
-            <p className="text-xs text-gray-400 mt-0.5">Doi Suthep forest mesh dead zones</p>
+            <p className="text-xs text-gray-400 mt-0.5">พื้นที่อับสัญญาณในโครงข่ายบริเวณป่าดอยสุเทพ</p>
           </div>
 
           {/* Canvas Map Projection SVG */}
@@ -344,7 +344,7 @@ export default function AnalyticsDashboard() {
                 strokeDasharray="2,2"
               />
               <text x="140" y="75" textAnchor="middle" fill="#f87171" className="text-[7px] font-mono tracking-tighter opacity-80">
-                DEAD ZONE
+                พื้นที่อับสัญญาณ
               </text>
 
               {/* Draw coverage radius around active nodes */}
@@ -424,7 +424,7 @@ export default function AnalyticsDashboard() {
           <div className="bg-gray-950/50 border border-gray-900 rounded-2xl p-3 flex items-start gap-2.5">
             <Info className="text-blue-400 flex-shrink-0 mt-0.5" size={14} />
             <p className="text-[10px] text-gray-400 leading-normal">
-              Radius circles show simulated 2.4GHz RF signal bounds. Overlap areas allow mesh routing hops. Red dotted area represents Doi Pui ridge shadowing where signal blockage occurs.
+              วงกลมแสดงขอบเขตสัญญาณวิทยุ 2.4GHz ที่ผ่านการจำลอง พื้นที่ทับซ้อนแสดงส่วนเชื่อมโยงโครงข่ายแบบ Mesh ส่วนกรอบสีแดงประแสดงพื้นที่เงาอับสัญญาณเนื่องจากแนวเขาดอยปุยบดบัง
             </p>
           </div>
 
@@ -439,7 +439,7 @@ export default function AnalyticsDashboard() {
         <div className="glass-panel border-gray-800 rounded-3xl p-6 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-4">
             <AlertTriangle className="text-amber-500" size={18} />
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Dead Zone Recommender</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">ระบบแนะนำการติดตั้งเสริมในจุดอับสัญญาณ</h4>
           </div>
 
           <div className="space-y-3 flex-1">
@@ -450,7 +450,7 @@ export default function AnalyticsDashboard() {
                   <span className={`text-[8px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
                     zone.severity === 'High' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                   }`}>
-                    {zone.severity} Risk
+                    {zone.severity === 'High' ? 'ความเสี่ยงสูง' : 'ความเสี่ยงปานกลาง'}
                   </span>
                 </div>
                 <p className="text-[10px] text-gray-400">{zone.recommendation}</p>
@@ -463,43 +463,43 @@ export default function AnalyticsDashboard() {
         <div className="glass-panel border-gray-800 rounded-3xl p-6 flex flex-col justify-between">
           <div className="flex items-center gap-2 mb-4">
             <Signal className="text-blue-400" size={18} />
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Signal Quality Matrix</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">ตารางแสดงความแรงสัญญาณโครงข่าย</h4>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-[10px] font-mono text-left">
               <thead>
                 <tr className="border-b border-gray-950 text-gray-500">
-                  <th className="pb-2">Node Pair</th>
+                  <th className="pb-2">โหนดคู่เชื่อมต่อ</th>
                   <th className="pb-2">RSSI (dBm)</th>
-                  <th className="pb-2">Link Quality</th>
-                  <th className="pb-2 text-right">Status</th>
+                  <th className="pb-2">คุณภาพลิงก์</th>
+                  <th className="pb-2 text-right">สถานะ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-950 text-gray-300">
                 <tr className="border-b border-gray-950">
                   <td className="py-2">node-01 ↔ node-02</td>
                   <td className="py-2">-52</td>
-                  <td className="py-2">Excellent (225/255)</td>
-                  <td className="py-2 text-right text-emerald-400 font-semibold">Active</td>
+                  <td className="py-2">ดีเยี่ยม (225/255)</td>
+                  <td className="py-2 text-right text-emerald-400 font-semibold">ใช้งานอยู่</td>
                 </tr>
                 <tr className="border-b border-gray-950">
                   <td className="py-2">node-02 ↔ node-03</td>
                   <td className="py-2">-65</td>
-                  <td className="py-2">Good (192/255)</td>
-                  <td className="py-2 text-right text-emerald-400 font-semibold">Active</td>
+                  <td className="py-2">ดี (192/255)</td>
+                  <td className="py-2 text-right text-emerald-400 font-semibold">ใช้งานอยู่</td>
                 </tr>
                 <tr className="border-b border-gray-950">
                   <td className="py-2">node-04 ↔ node-07</td>
                   <td className="py-2">-58</td>
-                  <td className="py-2">Good (208/255)</td>
-                  <td className="py-2 text-right text-emerald-400 font-semibold">Active</td>
+                  <td className="py-2">ดี (208/255)</td>
+                  <td className="py-2 text-right text-emerald-400 font-semibold">ใช้งานอยู่</td>
                 </tr>
                 <tr className="border-b border-gray-950">
                   <td className="py-2">node-05 ↔ node-08</td>
                   <td className="py-2">-80</td>
-                  <td className="py-2">Degraded (145/255)</td>
-                  <td className="py-2 text-right text-amber-400 font-semibold">Weak</td>
+                  <td className="py-2">สัญญาณดรอป (145/255)</td>
+                  <td className="py-2 text-right text-amber-400 font-semibold">สัญญาณอ่อน</td>
                 </tr>
               </tbody>
             </table>

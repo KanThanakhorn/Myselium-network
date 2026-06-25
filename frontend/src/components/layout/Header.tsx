@@ -15,8 +15,25 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
   const activeTab = useSelector((state: RootState) => state.ui.activeTab);
   const { currentUser } = useSelector((state: RootState) => state.user);
 
-  // Capitalize active tab title
-  const tabTitle = activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ');
+  const getTabTitle = (tab: string) => {
+    switch (tab) {
+      case 'overview': return 'ภาพรวมโครงข่าย';
+      case 'alerts': return 'การแจ้งเตือนไฟป่า';
+      case 'nodes': return 'อุปกรณ์และสถานะเซนเซอร์';
+      case 'health': return 'สุขภาพเครือข่ายและเส้นทาง';
+      case 'analytics': return 'กราฟสถิติและข้อมูล';
+      case 'settings': return 'ตั้งค่าระบบ';
+      default: return tab;
+    }
+  };
+
+  const getRoleLabel = (role: string) => {
+    if (role === 'admin') return 'ผู้ดูแลระบบ';
+    if (role === 'ranger') return 'เจ้าหน้าที่ป่าไม้';
+    return role;
+  };
+
+  const tabTitle = getTabTitle(activeTab);
 
   return (
     <header className="glass-panel border-b border-gray-800 h-16 flex items-center justify-between px-6 sticky top-0 z-30 w-full">
@@ -24,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
       <div className="flex items-center gap-3">
         <h1 className="text-xl font-bold text-white tracking-wide m-0">{tabTitle}</h1>
         <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full font-mono font-medium">
-          Dashboard / {activeTab}
+          ระบบ / {tabTitle}
         </span>
       </div>
 
@@ -39,14 +56,14 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </div>
               <span className="text-emerald-400 font-mono font-medium text-[11px] flex items-center gap-1">
-                <Wifi size={12} /> TELEMETRY ONLINE
+                <Wifi size={12} /> สัญญาณสดออนไลน์
               </span>
             </>
           ) : (
             <>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               <span className="text-red-400 font-mono font-medium text-[11px] flex items-center gap-1">
-                <WifiOff size={12} /> TELEMETRY OFFLINE
+                <WifiOff size={12} /> ข้อมูลออฟไลน์
               </span>
             </>
           )}
@@ -56,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
         <button
           onClick={() => dispatch(setDarkMode(!darkMode))}
           className="text-gray-400 hover:text-white p-2 rounded-xl bg-gray-800/30 hover:bg-gray-800/60 border border-gray-800/50 transition-colors"
-          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          title={darkMode ? "เปลี่ยนเป็นโหมดสว่าง" : "เปลี่ยนเป็นโหมดมืด"}
         >
           {darkMode ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} />}
         </button>
@@ -67,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
             <div className="flex flex-col text-right">
               <span className="text-xs font-semibold text-white leading-none">{currentUser.name || currentUser.email}</span>
               <span className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider mt-0.5">
-                {currentUser.role}
+                {getRoleLabel(currentUser.role)}
               </span>
             </div>
             
@@ -78,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
             <button
               onClick={() => dispatch(logout())}
               className="text-gray-500 hover:text-red-400 p-2 rounded-xl hover:bg-red-500/10 transition-colors ml-1"
-              title="Logout"
+              title="ออกจากระบบ"
             >
               <LogOut size={16} />
             </button>

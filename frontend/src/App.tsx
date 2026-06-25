@@ -58,15 +58,15 @@ function App() {
   // Handle Quick Actions
   const handleAcknowledgeAll = () => {
     if (activeAlerts.length === 0) {
-      dispatch(addNotification({ message: 'No active alerts to acknowledge', type: 'info' }));
+      dispatch(addNotification({ message: 'ไม่มีการแจ้งเตือนปัจจุบันให้รับทราบ', type: 'info' }));
       return;
     }
     dispatch(acknowledgeAllAlerts('ranger_somchai'));
-    dispatch(addNotification({ message: 'All active alerts acknowledged', type: 'success' }));
+    dispatch(addNotification({ message: 'รับทราบการแจ้งเตือนทั้งหมดเรียบร้อยแล้ว', type: 'success' }));
   };
 
   const handleDownloadReport = () => {
-    dispatch(addNotification({ message: 'Report download started...', type: 'success' }));
+    dispatch(addNotification({ message: 'กำลังเริ่มการดาวน์โหลดรายงาน...', type: 'success' }));
   };
 
   const triggerTestSimulation = () => {
@@ -86,7 +86,7 @@ function App() {
 
     dispatch(addRealtimeAlert(testAlert));
     dispatch(addNotification({
-      message: `⚠️ CRITICAL: Fire/Smoke detected at ${testAlert.sourceNodeId}!`,
+      message: `⚠️ วิกฤต: ตรวจพบไฟไหม้/กลุ่มควันหนาแน่น ที่จุด ${testAlert.sourceNodeId}!`,
       type: 'error'
     }));
   };
@@ -112,14 +112,14 @@ function App() {
               </span>
               <span className="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
                 <AlertOctagon size={14} className="text-red-500" />
-                Emergency Alert: Active Fire/Smoke detected at Doi Suthep sensors!
+                แจ้งเตือนฉุกเฉิน: ตรวจพบไฟไหม้/กลุ่มควันหนาแน่น จากเซนเซอร์ในป่าดอยสุเทพ!
               </span>
             </div>
             <button 
               onClick={handleAcknowledgeAll}
               className="text-[10px] font-bold uppercase px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg border border-red-500/30 transition-colors cursor-pointer"
             >
-              Acknowledge All
+              รับทราบเหตุทั้งหมด
             </button>
           </div>
         )}
@@ -137,27 +137,27 @@ function App() {
               {/* Quick Actions & Alarm Test Panel */}
               <div className="glass-panel border-gray-800 rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-white">Quick Actions Control</h3>
-                  <p className="text-xs text-gray-400 mt-1">Control system telemetry and trigger mock events</p>
+                  <h3 className="text-sm font-semibold text-white">แผงควบคุมและดำเนินการด่วน</h3>
+                  <p className="text-xs text-gray-400 mt-1">ควบคุมระบบการวัดระยะไกลและการทดสอบจำลองเหตุการณ์</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={triggerTestSimulation}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-red-500 text-white hover:bg-red-400 transition-colors shadow-lg shadow-red-500/20"
                   >
-                    <Flame size={14} /> Trigger Fire Test
+                    <Flame size={14} /> จำลองสัญญาณไฟป่า
                   </button>
                   <button
                     onClick={handleAcknowledgeAll}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-blue-500 text-white hover:bg-blue-400 transition-colors"
                   >
-                    <CheckCircle size={14} /> Acknowledge All
+                    <CheckCircle size={14} /> รับทราบเหตุทั้งหมด
                   </button>
                   <button
                     onClick={handleDownloadReport}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 transition-colors"
                   >
-                    <Download size={14} /> Download Report
+                    <Download size={14} /> ดาวน์โหลดรายงาน
                   </button>
                 </div>
               </div>
@@ -169,33 +169,32 @@ function App() {
                 <div className="glass-panel border-gray-800 rounded-3xl p-6 lg:col-span-2">
                   <div className="flex items-center gap-2 mb-4">
                     <Workflow className="text-emerald-400" size={20} />
-                    <h3 className="text-sm font-semibold text-white">Mycelium Routing Parameters</h3>
+                    <h3 className="text-sm font-semibold text-white">ค่าพารามิเตอร์ระบบหาเส้นทาง Mycelium</h3>
                   </div>
                   <p className="text-xs text-gray-400 leading-relaxed mb-5">
-                    Bio-inspired self-healing protocol that routes signals dynamically around obstacles or failed nodes. 
-                    Paths are weighted based on three distinct coefficients:
+                    โปรโตคอลการฟื้นฟูตัวเองที่ได้รับแรงบันดาลใจจากธรรมชาติ (โครงข่ายรากเห็ด Mycelium) ในการหาเส้นทางส่งสัญญาณหลบหลีกสิ่งกีดขวางหรือจุดโหนดที่ล้มเหลว โดยจะคำนวณค่าน้ำหนักจาก 3 ค่าปัจจัยหลัก:
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-gray-950/40 border border-gray-800 rounded-2xl p-4">
-                      <span className="text-[10px] font-mono text-gray-500 uppercase">Residual Energy (α)</span>
-                      <div className="text-lg font-bold text-white mt-1">Weight: 0.50</div>
+                      <span className="text-[10px] font-mono text-gray-500 uppercase">พลังงานแบตเตอรี่คงเหลือ (α)</span>
+                      <div className="text-lg font-bold text-white mt-1">ค่าน้ำหนัก: 0.50</div>
                       <div className="w-full bg-gray-900 h-1.5 rounded-full mt-2 overflow-hidden border border-gray-800">
                         <div className="bg-emerald-400 h-full w-[50%]"></div>
                       </div>
                     </div>
                     
                     <div className="bg-gray-950/40 border border-gray-800 rounded-2xl p-4">
-                      <span className="text-[10px] font-mono text-gray-500 uppercase">Link Quality RSSI (β)</span>
-                      <div className="text-lg font-bold text-white mt-1">Weight: 0.30</div>
+                      <span className="text-[10px] font-mono text-gray-500 uppercase">คุณภาพความแรงสัญญาณ RSSI (β)</span>
+                      <div className="text-lg font-bold text-white mt-1">ค่าน้ำหนัก: 0.30</div>
                       <div className="w-full bg-gray-900 h-1.5 rounded-full mt-2 overflow-hidden border border-gray-800">
                         <div className="bg-blue-400 h-full w-[30%]"></div>
                       </div>
                     </div>
 
                     <div className="bg-gray-950/40 border border-gray-800 rounded-2xl p-4">
-                      <span className="text-[10px] font-mono text-gray-500 uppercase">Data Urgency (γ)</span>
-                      <div className="text-lg font-bold text-white mt-1">Weight: 0.20</div>
+                      <span className="text-[10px] font-mono text-gray-500 uppercase">ความเร่งด่วนของข้อมูล (γ)</span>
+                      <div className="text-lg font-bold text-white mt-1">ค่าน้ำหนัก: 0.20</div>
                       <div className="w-full bg-gray-900 h-1.5 rounded-full mt-2 overflow-hidden border border-gray-800">
                         <div className="bg-red-400 h-full w-[20%]"></div>
                       </div>
@@ -208,33 +207,33 @@ function App() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <Activity className="text-emerald-400 animate-pulse" size={18} />
-                      <h3 className="text-sm font-semibold text-white">Self-Healing Event Log</h3>
+                      <h3 className="text-sm font-semibold text-white">บันทึกเหตุการณ์ฟื้นฟูตัวเองอัตโนมัติ</h3>
                     </div>
                     <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-semibold">
-                      LIVE
+                      สด
                     </span>
                   </div>
 
                   <div className="space-y-4 flex-1 overflow-y-auto max-h-[220px] pr-2">
                     <div className="p-3 bg-gray-950/40 border border-gray-800 rounded-2xl flex flex-col gap-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-red-400">Node-06 Failed</span>
-                        <span className="text-[9px] font-mono text-gray-500">10m ago</span>
+                        <span className="text-[10px] font-bold text-red-400">โหนด Node-06 ล้มเหลว</span>
+                        <span className="text-[9px] font-mono text-gray-500">10 นาทีที่แล้ว</span>
                       </div>
-                      <p className="text-xs text-gray-300">Rerouted via Node-03 and Node-01. Packets delivered.</p>
+                      <p className="text-xs text-gray-300">เปลี่ยนเส้นทางผ่าน Node-03 และ Node-01 การส่งข้อมูลสำเร็จ</p>
                       <span className="text-[9px] text-emerald-400 font-mono mt-1 flex items-center gap-0.5">
-                        <CheckCircle size={10} /> Recovery: 245ms
+                        <CheckCircle size={10} /> เวลาในการกู้คืนระบบ: 245ms
                       </span>
                     </div>
 
                     <div className="p-3 bg-gray-950/40 border border-gray-800 rounded-2xl flex flex-col gap-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-amber-400">Link Degradation</span>
-                        <span className="text-[9px] font-mono text-gray-500">1h ago</span>
+                        <span className="text-[10px] font-bold text-amber-400">คุณภาพลิงก์สัญญาณลดลง</span>
+                        <span className="text-[9px] font-mono text-gray-500">1 ชั่วโมงที่แล้ว</span>
                       </div>
-                      <p className="text-xs text-gray-300">RSSI degraded between Node-05 → Node-08. Switch to backup path.</p>
+                      <p className="text-xs text-gray-300">ค่า RSSI ลดลงระหว่าง Node-05 → Node-08 สลับไปใช้เส้นทางสำรอง</p>
                       <span className="text-[9px] text-emerald-400 font-mono mt-1 flex items-center gap-0.5">
-                        <CheckCircle size={10} /> Recovery: 180ms
+                        <CheckCircle size={10} /> เวลาในการกู้คืนระบบ: 180ms
                       </span>
                     </div>
                   </div>
@@ -275,15 +274,15 @@ function App() {
                         <span className="font-mono text-sm font-bold text-white">{node.nodeId}</span>
                         {hasCriticalAlert ? (
                           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-red-500 text-white animate-pulse">
-                            <AlertOctagon size={10} /> FIRE ALERT
+                            <AlertOctagon size={10} /> ตรวจพบไฟไหม้
                           </span>
                         ) : node.status === 'active' ? (
                           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            ONLINE
+                            ออนไลน์
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-gray-850 text-gray-500">
-                            OFFLINE
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-gray-855 text-gray-500 border border-gray-800">
+                            ออฟไลน์
                           </span>
                         )}
                       </div>
@@ -296,25 +295,25 @@ function App() {
                       {/* Sensor Readings */}
                       <div className="grid grid-cols-2 gap-3 mt-4">
                         <div className="p-2.5 bg-gray-950/40 rounded-2xl border border-gray-900/50 flex flex-col">
-                          <span className="text-[9px] font-mono text-gray-500 uppercase">Temp</span>
+                          <span className="text-[9px] font-mono text-gray-500 uppercase">อุณหภูมิ</span>
                           <span className="text-sm font-bold text-white mt-0.5">
                             {node.status === 'dead' ? '—' : `${node.sensors.temp.toFixed(1)}°C`}
                           </span>
                         </div>
                         <div className="p-2.5 bg-gray-950/40 rounded-2xl border border-gray-900/50 flex flex-col">
-                          <span className="text-[9px] font-mono text-gray-500 uppercase">Smoke</span>
+                          <span className="text-[9px] font-mono text-gray-500 uppercase">ควันไฟ</span>
                           <span className="text-sm font-bold text-white mt-0.5">
                             {node.status === 'dead' ? '—' : `${node.sensors.smoke} ppm`}
                           </span>
                         </div>
                         <div className="p-2.5 bg-gray-950/40 rounded-2xl border border-gray-900/50 flex flex-col">
-                          <span className="text-[9px] font-mono text-gray-500 uppercase">Humidity</span>
+                          <span className="text-[9px] font-mono text-gray-500 uppercase">ความชื้น</span>
                           <span className="text-sm font-bold text-white mt-0.5">
                             {node.status === 'dead' ? '—' : `${node.sensors.humidity.toFixed(0)}%`}
                           </span>
                         </div>
                         <div className="p-2.5 bg-gray-950/40 rounded-2xl border border-gray-900/50 flex flex-col">
-                          <span className="text-[9px] font-mono text-gray-500 uppercase">Battery</span>
+                          <span className="text-[9px] font-mono text-gray-500 uppercase">แบตเตอรี่</span>
                           <span className="text-sm font-bold text-white mt-0.5 flex items-center gap-1">
                             <Battery size={12} className={node.battery < 20 ? 'text-red-400 animate-pulse' : 'text-emerald-400'} />
                             {node.status === 'dead' ? '0%' : `${node.battery}%`}
@@ -350,46 +349,46 @@ function App() {
               <div className="glass-panel border-gray-800 rounded-3xl p-6">
                 <div className="flex items-center gap-2 mb-4 border-b border-gray-900 pb-3">
                   <SettingsIcon className="text-gray-400" size={20} />
-                  <h3 className="text-sm font-semibold text-white">System Parameter Settings</h3>
+                  <h3 className="text-sm font-semibold text-white">ตั้งค่าพารามิเตอร์ระบบ</h3>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-gray-400">Critical Temperature Threshold (°C)</label>
+                    <label className="text-xs font-bold text-gray-400">ขีดจำกัดอุณหภูมิวิกฤต (°C)</label>
                     <input 
                       type="number" 
                       defaultValue={40} 
                       className="bg-gray-950/80 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
                     />
-                    <span className="text-[10px] text-gray-500">Triggers critical siren alerts if any node reports temperature above this limit.</span>
+                    <span className="text-[10px] text-gray-500">ส่งสัญญาณเตือนภัยวิกฤตหากพบอุณหภูมิโหนดใดสูงเกินขีดจำกัดนี้</span>
                   </div>
 
                   <div className="flex flex-col gap-1.5 pt-2">
-                    <label className="text-xs font-bold text-gray-400">Critical Smoke Density Threshold (ppm)</label>
+                    <label className="text-xs font-bold text-gray-400">ขีดจำกัดความหนาแน่นควันวิกฤต (ppm)</label>
                     <input 
                       type="number" 
                       defaultValue={400} 
                       className="bg-gray-950/80 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
                     />
-                    <span className="text-[10px] text-gray-500">Triggers critical fire warnings if smoke concentration exceeds this limit.</span>
+                    <span className="text-[10px] text-gray-500">ส่งสัญญาณเตือนภัยวิกฤตหากพบค่าความเข้มข้นควันเกินขีดจำกัดนี้</span>
                   </div>
 
                   <div className="flex flex-col gap-1.5 pt-2">
-                    <label className="text-xs font-bold text-gray-400">Critical PM2.5 Level (µg/m³)</label>
+                    <label className="text-xs font-bold text-gray-400">ขีดจำกัดค่าฝุ่น PM2.5 วิกฤต (µg/m³)</label>
                     <input 
                       type="number" 
                       defaultValue={100} 
                       className="bg-gray-950/80 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
                     />
-                    <span className="text-[10px] text-gray-500">Triggers air quality hazard warnings if PM2.5 is above this limit.</span>
+                    <span className="text-[10px] text-gray-500">ส่งสัญญาณเตือนอันตรายต่อสุขภาพหากพบฝุ่น PM2.5 เกินขีดจำกัดนี้</span>
                   </div>
 
                   <div className="pt-4 border-t border-gray-900 flex justify-end">
                     <button
-                      onClick={() => dispatch(addNotification({ message: 'Configurations saved successfully.', type: 'success' }))}
+                      onClick={() => dispatch(addNotification({ message: 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว', type: 'success' }))}
                       className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-400 transition-colors"
                     >
-                      Save Configuration
+                      บันทึกการตั้งค่า
                     </button>
                   </div>
                 </div>
