@@ -33,11 +33,112 @@ export default function NetworkTopology() {
   const [nodePositions, setNodePositions] = useState<Record<string, NodePosition>>({});
   const [isCalibrating, setIsCalibrating] = useState(false);
 
+  // Zoom & Pan states
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [hasMovedDuringDrag, setHasMovedDuringDrag] = useState(false);
+
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // Width and height of SVG canvas
   const width = 800;
   const height = 500;
+
+  // Register non-passive wheel event listener for zoom behavior (centered on cursor)
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      
+      const rect = svg.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      // Convert mouse positions to SVG coordinate space
+      const svgX = (mouseX / rect.width) * width;
+      const svgY = (mouseY / rect.height) * height;
+
+      const zoomIntensity = 0.05;
+      const delta = e.deltaY < 0 ? 1 : -1;
+      
+      setScale((prevScale) => {
+        const nextScale = Math.max(0.5, Math.min(5, prevScale + delta * zoomIntensity));
+        
+        setOffset((prevOffset) => {
+          const scaleRatio = nextScale / prevScale;
+          const nextOffsetX = svgX - (svgX - prevOffset.x) * scaleRatio;
+          const nextOffsetY = svgY - (svgY - prevOffset.y) * scaleRatio;
+          return { x: nextOffsetX, y: nextOffsetY };
+        });
+
+        return nextScale;
+      });
+    };
+
+    svg.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      svg.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (e.button !== 0) return; // Only pan on left click
+    setIsDragging(true);
+    setHasMovedDuringDrag(false);
+    setDragStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDragging) return;
+    const dx = e.clientX - offset.x - dragStart.x;
+    const dy = e.clientY - offset.y - dragStart.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      setHasMovedDuringDrag(true);
+    }
+    setOffset({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUpOrLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleZoomIn = () => {
+    setScale((prevScale) => {
+      const nextScale = Math.min(5, prevScale + 0.2);
+      setOffset((prevOffset) => {
+        const scaleRatio = nextScale / prevScale;
+        const nextOffsetX = (width / 2) - ((width / 2) - prevOffset.x) * scaleRatio;
+        const nextOffsetY = (height / 2) - ((height / 2) - prevOffset.y) * scaleRatio;
+        return { x: nextOffsetX, y: nextOffsetY };
+      });
+      return nextScale;
+    });
+  };
+
+  const handleZoomOut = () => {
+    setScale((prevScale) => {
+      const nextScale = Math.max(0.5, prevScale - 0.2);
+      setOffset((prevOffset) => {
+        const scaleRatio = nextScale / prevScale;
+        const nextOffsetX = (width / 2) - ((width / 2) - prevOffset.x) * scaleRatio;
+        const nextOffsetY = (height / 2) - ((height / 2) - prevOffset.y) * scaleRatio;
+        return { x: nextOffsetX, y: nextOffsetY };
+      });
+      return nextScale;
+    });
+  };
+
+  const handleReset = () => {
+    setScale(1);
+    setOffset({ x: 0, y: 0 });
+  };
 
   // Initialize geographical mapping positions
   useEffect(() => {
@@ -140,11 +241,40 @@ export default function NetworkTopology() {
             </div>
           </div>
 
+          {/* Zoom/Pan Controls */}
+          <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10">
+            <button 
+              onClick={handleZoomIn}
+              className="w-8 h-8 rounded-xl bg-gray-950/80 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors flex items-center justify-center font-bold text-sm shadow-md"
+              title="Zoom In"
+            >
+              +
+            </button>
+            <button 
+              onClick={handleZoomOut}
+              className="w-8 h-8 rounded-xl bg-gray-950/80 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors flex items-center justify-center font-bold text-sm shadow-md"
+              title="Zoom Out"
+            >
+              −
+            </button>
+            <button 
+              onClick={handleReset}
+              className="w-8 h-8 rounded-xl bg-gray-950/80 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors flex items-center justify-center text-[10px] font-semibold shadow-md"
+              title="Reset View"
+            >
+              รีเซ็ต
+            </button>
+          </div>
+
           {/* SVG Map Canvas */}
           <svg
             ref={svgRef}
             viewBox={`0 0 ${width} ${height}`}
-            className="w-full aspect-[8/5] select-none"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUpOrLeave}
+            onMouseLeave={handleMouseUpOrLeave}
+            className={`w-full aspect-[8/5] select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           >
             {/* Draw grid lines background */}
             <defs>
@@ -154,154 +284,162 @@ export default function NetworkTopology() {
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
 
-            {/* 1. Draw Mesh connections */}
-            {activeLinks.map((link, idx) => {
-              const p1 = nodePositions[link.source];
-              const p2 = nodePositions[link.target];
-              if (!p1 || !p2) return null;
+            {/* Transform Group for Zoom & Pan */}
+            <g transform={`translate(${offset.x}, ${offset.y}) scale(${scale})`}>
+              {/* 1. Draw Mesh connections */}
+              {activeLinks.map((link, idx) => {
+                const p1 = nodePositions[link.source];
+                const p2 = nodePositions[link.target];
+                if (!p1 || !p2) return null;
 
-              const node1 = nodes.find(n => n.nodeId === link.source);
-              const node2 = nodes.find(n => n.nodeId === link.target);
+                const node1 = nodes.find(n => n.nodeId === link.source);
+                const node2 = nodes.find(n => n.nodeId === link.target);
 
-              // Check if connection is active/healthy
-              const isDisconnected = !node1 || !node2 || node1.status === 'dead' || node2.status === 'dead' || node1.status === 'inactive' || node2.status === 'inactive';
-              const averageRSSI = node1 && node2 ? (node1.rssi + node2.rssi) / 2 : -100;
-              
-              let strokeColor = 'rgba(16, 185, 129, 0.4)'; // healthy green
-              if (isDisconnected) {
-                strokeColor = 'rgba(239, 68, 68, 0.2)'; // offline link
-              } else if (averageRSSI < -75) {
-                strokeColor = 'rgba(245, 158, 11, 0.4)'; // weak amber
-              }
+                // Check if connection is active/healthy
+                const isDisconnected = !node1 || !node2 || node1.status === 'dead' || node2.status === 'dead' || node1.status === 'inactive' || node2.status === 'inactive';
+                const averageRSSI = node1 && node2 ? (node1.rssi + node2.rssi) / 2 : -100;
+                
+                let strokeColor = 'rgba(16, 185, 129, 0.4)'; // healthy green
+                if (isDisconnected) {
+                  strokeColor = 'rgba(239, 68, 68, 0.2)'; // offline link
+                } else if (averageRSSI < -75) {
+                  strokeColor = 'rgba(245, 158, 11, 0.4)'; // weak amber
+                }
 
-              // Highlight connections attached to selected node
-              const isHighlighted = selectedNodeId === link.source || selectedNodeId === link.target;
+                // Highlight connections attached to selected node
+                const isHighlighted = selectedNodeId === link.source || selectedNodeId === link.target;
 
-              return (
-                <g key={`link-${idx}`}>
-                  <line
-                    x1={p1.x}
-                    y1={p1.y}
-                    x2={p2.x}
-                    y2={p2.y}
-                    stroke={strokeColor}
-                    strokeWidth={isHighlighted ? 2.5 : 1.5}
-                    strokeDasharray={link.type === 'backup' ? '4,4' : undefined}
-                    className="transition-all duration-300"
-                  />
-                  {/* Draw packet flow animation circles along active primary links */}
-                  {!isDisconnected && link.type === 'primary' && (
-                    <circle r="2.5" fill="#34d399">
-                      <animateMotion
-                        dur="4s"
-                        repeatCount="indefinite"
-                        path={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`}
-                      />
-                    </circle>
-                  )}
-                </g>
-              );
-            })}
+                return (
+                  <g key={`link-${idx}`}>
+                    <line
+                      x1={p1.x}
+                      y1={p1.y}
+                      x2={p2.x}
+                      y2={p2.y}
+                      stroke={strokeColor}
+                      strokeWidth={isHighlighted ? 2.5 : 1.5}
+                      strokeDasharray={link.type === 'backup' ? '4,4' : undefined}
+                      className="transition-all duration-300"
+                    />
+                    {/* Draw packet flow animation circles along active primary links */}
+                    {!isDisconnected && link.type === 'primary' && (
+                      <circle r="2.5" fill="#34d399">
+                        <animateMotion
+                          dur="4s"
+                          repeatCount="indefinite"
+                          path={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`}
+                        />
+                      </circle>
+                    )}
+                  </g>
+                );
+              })}
 
-            {/* 2. Draw Sensor Nodes */}
-            {nodes.map((node) => {
-              const pos = nodePositions[node.nodeId];
-              if (!pos) return null;
+              {/* 2. Draw Sensor Nodes */}
+              {nodes.map((node) => {
+                const pos = nodePositions[node.nodeId];
+                if (!pos) return null;
 
-              const hasAlert = activeAlerts.some(
-                a => a.sourceNodeId === node.nodeId && a.severity === 'critical'
-              );
+                const hasAlert = activeAlerts.some(
+                  a => a.sourceNodeId === node.nodeId && a.severity === 'critical'
+                );
 
-              // Determine Node styling based on operational metrics
-              const isOffline = node.status === 'dead' || node.status === 'inactive';
-              const isLowBattery = node.battery < 30;
+                // Determine Node styling based on operational metrics
+                const isOffline = node.status === 'dead' || node.status === 'inactive';
+                const isLowBattery = node.battery < 30;
 
-              let ringColor = 'rgba(16, 185, 129, 0.2)';
-              let circleColor = '#10b981'; // Green active
+                let ringColor = 'rgba(16, 185, 129, 0.2)';
+                let circleColor = '#10b981'; // Green active
 
-              if (hasAlert) {
-                circleColor = '#ef4444'; // Red fire alert
-                ringColor = 'rgba(239, 68, 68, 0.4)';
-              } else if (isOffline) {
-                circleColor = '#4b5563'; // Gray offline
-                ringColor = 'rgba(75, 85, 99, 0.1)';
-              } else if (isLowBattery) {
-                circleColor = '#f59e0b'; // Amber low battery
-                ringColor = 'rgba(245, 158, 11, 0.3)';
-              }
+                if (hasAlert) {
+                  circleColor = '#ef4444'; // Red fire alert
+                  ringColor = 'rgba(239, 68, 68, 0.4)';
+                } else if (isOffline) {
+                  circleColor = '#4b5563'; // Gray offline
+                  ringColor = 'rgba(75, 85, 99, 0.1)';
+                } else if (isLowBattery) {
+                  circleColor = '#f59e0b'; // Amber low battery
+                  ringColor = 'rgba(245, 158, 11, 0.3)';
+                }
 
-              const isSelected = selectedNodeId === node.nodeId;
+                const isSelected = selectedNodeId === node.nodeId;
 
-              // Node radius proportional to battery level (minimum 10px, max 16px)
-              const radius = 10 + (node.battery / 100) * 5;
+                // Node radius proportional to battery level (minimum 10px, max 16px)
+                const radius = 10 + (node.battery / 100) * 5;
 
-              return (
-                <g
-                  key={node.nodeId}
-                  transform={`translate(${pos.x}, ${pos.y})`}
-                  onClick={() => setSelectedNodeId(node.nodeId)}
-                  className="cursor-pointer group"
-                >
-                  <defs>
-                    <filter id={`glow-${node.nodeId}`} x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="5" result="blur" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                  </defs>
+                return (
+                  <g
+                    key={node.nodeId}
+                    transform={`translate(${pos.x}, ${pos.y})`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!hasMovedDuringDrag) {
+                        setSelectedNodeId(node.nodeId);
+                      }
+                    }}
+                    className="cursor-pointer group"
+                  >
+                    <defs>
+                      <filter id={`glow-${node.nodeId}`} x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="5" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
 
-                  {/* Pulsing ring for nodes in active fire alert state or selection */}
-                  {(hasAlert || isSelected) && (
+                    {/* Pulsing ring for nodes in active fire alert state or selection */}
+                    {(hasAlert || isSelected) && (
+                      <circle
+                        r={radius}
+                        fill="none"
+                        stroke={hasAlert ? '#ef4444' : '#60a5fa'}
+                        strokeWidth="1.5"
+                      >
+                        <animate
+                          attributeName="r"
+                          values={`${radius};${radius + 15}`}
+                          dur="2s"
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="opacity"
+                          values="0.8;0"
+                          dur="2s"
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                    )}
+
+                    {/* Outer selection ring */}
+                    <circle
+                      r={radius + 4}
+                      fill="none"
+                      stroke={isSelected ? '#60a5fa' : ringColor}
+                      strokeWidth={isSelected ? 2 : 1}
+                      className="transition-all duration-300 group-hover:scale-110"
+                    />
+
+                    {/* Core Node Circle */}
                     <circle
                       r={radius}
-                      fill="none"
-                      stroke={hasAlert ? '#ef4444' : '#60a5fa'}
-                      strokeWidth="1.5"
+                      fill={circleColor}
+                      filter={!isOffline ? `url(#glow-${node.nodeId})` : undefined}
+                      style={{ fill: circleColor }}
+                      className="transition-all duration-300"
+                    />
+
+                    {/* Node Label Text */}
+                    <text
+                      y={-radius - 8}
+                      textAnchor="middle"
+                      fill={isSelected ? '#60a5fa' : '#ffffff'}
+                      className="text-[10px] font-mono font-bold tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
                     >
-                      <animate
-                        attributeName="r"
-                        values={`${radius};${radius + 15}`}
-                        dur="2s"
-                        repeatCount="indefinite"
-                      />
-                      <animate
-                        attributeName="opacity"
-                        values="0.8;0"
-                        dur="2s"
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                  )}
-
-                  {/* Outer selection ring */}
-                  <circle
-                    r={radius + 4}
-                    fill="none"
-                    stroke={isSelected ? '#60a5fa' : ringColor}
-                    strokeWidth={isSelected ? 2 : 1}
-                    className="transition-all duration-300 group-hover:scale-110"
-                  />
-
-                  {/* Core Node Circle */}
-                  <circle
-                    r={radius}
-                    fill={circleColor}
-                    filter={!isOffline ? `url(#glow-${node.nodeId})` : undefined}
-                    style={{ fill: circleColor }}
-                    className="transition-all duration-300"
-                  />
-
-                  {/* Node Label Text */}
-                  <text
-                    y={-radius - 8}
-                    textAnchor="middle"
-                    fill={isSelected ? '#60a5fa' : '#ffffff'}
-                    className="text-[10px] font-mono font-bold tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-                  >
-                    {node.nodeId}
-                  </text>
-                </g>
-              );
-            })}
+                      {node.nodeId}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
           </svg>
         </div>
 
