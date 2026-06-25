@@ -4,12 +4,12 @@ import type { RootState, AppDispatch } from '../../store';
 import { recalibrateNodeThunk, updateNodeStatusThunk } from '../../store/slices/nodesSlice';
 import { addNotification } from '../../store/slices/uiSlice';
 import type { SensorNode } from '../../types';
-import { 
-  Activity, 
-  MapPin, 
-  Battery, 
-  Signal, 
-  RefreshCw, 
+import {
+  Activity,
+  MapPin,
+  Battery,
+  Signal,
+  RefreshCw,
   Power,
   Workflow
 } from 'lucide-react';
@@ -53,7 +53,7 @@ export default function NetworkTopology() {
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      
+
       const rect = svg.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
@@ -64,10 +64,10 @@ export default function NetworkTopology() {
 
       const zoomIntensity = 0.05;
       const delta = e.deltaY < 0 ? 1 : -1;
-      
+
       setScale((prevScale) => {
         const nextScale = Math.max(0.5, Math.min(5, prevScale + delta * zoomIntensity));
-        
+
         setOffset((prevOffset) => {
           const scaleRatio = nextScale / prevScale;
           const nextOffsetX = svgX - (svgX - prevOffset.x) * scaleRatio;
@@ -151,7 +151,7 @@ export default function NetworkTopology() {
     const maxLng = 98.960;
 
     const initialPositions: Record<string, NodePosition> = {};
-    
+
     nodes.forEach((node) => {
       // Scale lat/lng to canvas width/height
       const x = ((node.location.lng - minLng) / (maxLng - minLng)) * (width - 160) + 80;
@@ -182,9 +182,9 @@ export default function NetworkTopology() {
     const nextStatus = node.status === 'active' ? 'inactive' : 'active';
     try {
       await dispatch(updateNodeStatusThunk({ nodeId: node.nodeId, status: nextStatus })).unwrap();
-      dispatch(addNotification({ 
-        message: `อัปเดตสถานะโหนด ${node.nodeId} เป็น ${nextStatus === 'active' ? 'เปิดทำงาน' : 'ปิดทำงาน'} เรียบร้อยแล้ว`, 
-        type: 'success' 
+      dispatch(addNotification({
+        message: `อัปเดตสถานะโหนด ${node.nodeId} เป็น ${nextStatus === 'active' ? 'เปิดทำงาน' : 'ปิดทำงาน'} เรียบร้อยแล้ว`,
+        type: 'success'
       }));
     } catch (err: any) {
       dispatch(addNotification({ message: err || 'การอัปเดตสถานะเซนเซอร์ล้มเหลว', type: 'error' }));
@@ -195,7 +195,7 @@ export default function NetworkTopology() {
 
   return (
     <div className="px-6 space-y-6">
-      
+
       {/* Topology Header Panel */}
       <div className="glass-panel border-gray-800 rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -211,10 +211,10 @@ export default function NetworkTopology() {
 
       {/* Main Grid: Interactive Canvas & Information Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* Network SVG Canvas panel */}
         <div className="glass-panel border-gray-800 rounded-3xl p-4 lg:col-span-2 relative overflow-hidden flex flex-col items-center bg-gray-950/20">
-          
+
           {/* Canvas Legend */}
           <div className="absolute top-4 left-4 bg-gray-950/80 border border-gray-800/80 rounded-2xl p-3 flex flex-col gap-1.5 text-[10px] text-gray-400 backdrop-blur-md z-10 shadow-lg">
             <span className="font-bold text-white mb-0.5">คำอธิบายสถานะ</span>
@@ -243,21 +243,21 @@ export default function NetworkTopology() {
 
           {/* Zoom/Pan Controls */}
           <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10">
-            <button 
+            <button
               onClick={handleZoomIn}
               className="w-8 h-8 rounded-xl bg-gray-950/80 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors flex items-center justify-center font-bold text-sm shadow-md"
               title="Zoom In"
             >
               +
             </button>
-            <button 
+            <button
               onClick={handleZoomOut}
               className="w-8 h-8 rounded-xl bg-gray-950/80 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors flex items-center justify-center font-bold text-sm shadow-md"
               title="Zoom Out"
             >
               −
             </button>
-            <button 
+            <button
               onClick={handleReset}
               className="w-8 h-8 rounded-xl bg-gray-950/80 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors flex items-center justify-center text-[10px] font-semibold shadow-md"
               title="Reset View"
@@ -309,7 +309,7 @@ export default function NetworkTopology() {
                 // Check if connection is active/healthy
                 const isDisconnected = !node1 || !node2 || node1.status === 'dead' || node2.status === 'dead' || node1.status === 'inactive' || node2.status === 'inactive';
                 const averageRSSI = node1 && node2 ? (node1.rssi + node2.rssi) / 2 : -100;
-                
+
                 let strokeColor = 'rgba(16, 185, 129, 0.4)'; // healthy green
                 if (isDisconnected) {
                   strokeColor = 'rgba(239, 68, 68, 0.2)'; // offline link
@@ -458,7 +458,7 @@ export default function NetworkTopology() {
         <div className="glass-panel border-gray-800 rounded-3xl p-6 flex flex-col justify-between min-h-[350px]">
           {selectedNodeObj ? (
             <div className="space-y-6 flex-1 flex flex-col justify-between">
-              
+
               {/* Header: Node Details */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -534,8 +534,8 @@ export default function NetworkTopology() {
                 <div className="flex justify-between text-xs font-mono text-gray-300">
                   <span className="flex items-center gap-1"><Workflow size={12} className="text-emerald-400" /> ค่าน้ำหนักตัดสินใจ (Weight)</span>
                   <span className="text-emerald-400 font-bold">
-                    {weights && weights[selectedNodeObj.nodeId] 
-                      ? weights[selectedNodeObj.nodeId].toFixed(3) 
+                    {weights && weights[selectedNodeObj.nodeId]
+                      ? weights[selectedNodeObj.nodeId].toFixed(3)
                       : (selectedNodeObj.status === 'active' ? '0.740' : '0.000')}
                   </span>
                 </div>
@@ -549,19 +549,18 @@ export default function NetworkTopology() {
                     onClick={() => handleRecalibrate(selectedNodeObj.nodeId)}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold bg-gray-850 hover:bg-gray-850 text-white border border-gray-800 hover:border-gray-700 transition-colors disabled:opacity-50"
                   >
-                    <RefreshCw className={isCalibrating ? 'animate-spin' : ''} size={14} /> 
+                    <RefreshCw className={isCalibrating ? 'animate-spin' : ''} size={14} />
                     {isCalibrating ? 'กำลังปรับเทียบ...' : 'ปรับเทียบใหม่'}
                   </button>
 
                   <button
                     onClick={() => handleToggleStatus(selectedNodeObj)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-white transition-colors ${
-                      selectedNodeObj.status === 'active' 
-                        ? 'bg-red-500/10 hover:bg-red-500/20 border border-red-500/30' 
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-white transition-colors ${selectedNodeObj.status === 'active'
+                        ? 'bg-red-500/10 hover:bg-red-500/20 border border-red-500/30'
                         : 'bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30'
-                    }`}
+                      }`}
                   >
-                    <Power size={14} /> 
+                    <Power size={14} />
                     {selectedNodeObj.status === 'active' ? 'ปิดการทำงาน' : 'เปิดการทำงาน'}
                   </button>
                 </div>
