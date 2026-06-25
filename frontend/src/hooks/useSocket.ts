@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
 import { useDispatch } from 'react-redux';
 import { addRealtimeAlert } from '../store/slices/alertsSlice';
-import { updateRealtimeNode, updateMetrics } from '../store/slices/nodesSlice';
+import { updateRealtimeNode, updateMetrics, updateRealtimeRoutes } from '../store/slices/nodesSlice';
 import { addNotification } from '../store/slices/uiSlice';
 import type { Alert, SensorNode, SystemMetrics } from '../types';
 
@@ -52,6 +52,16 @@ export const useSocket = () => {
       dispatch(updateRealtimeNode(nodeData));
     });
 
+    // Dynamic routing path update
+    socket.on('routes_update', (routesData: any) => {
+      console.log('Dynamic routes update received:', routesData);
+      dispatch(updateRealtimeRoutes(routesData));
+      dispatch(addNotification({
+        message: 'Mycelium network topology self-healed and rerouted.',
+        type: 'success'
+      }));
+    });
+
     // New fire/smoke alert detected!
     socket.on('new_alert', (alertData: Alert) => {
       console.log('New alert received:', alertData);
@@ -74,6 +84,7 @@ export const useSocket = () => {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('node_update');
+      socket.off('routes_update');
       socket.off('new_alert');
       socket.off('metrics_update');
       socket.disconnect();

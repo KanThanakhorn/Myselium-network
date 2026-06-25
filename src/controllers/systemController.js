@@ -69,3 +69,23 @@ exports.getSystemHealth = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Get dynamic mycelium routing tables and active links
+// @route   GET /api/system/routes
+// @access  Public
+exports.getSystemRoutes = async (req, res, next) => {
+  try {
+    const { calculateDynamicRoutes } = require('../algorithms/myceliumRouting');
+    let nodes;
+    if (!isConnected()) {
+      nodes = seedNodes;
+    } else {
+      nodes = await SensorNode.find({});
+    }
+
+    const routingData = calculateDynamicRoutes(nodes);
+    res.status(200).json(routingData);
+  } catch (err) {
+    next(err);
+  }
+};

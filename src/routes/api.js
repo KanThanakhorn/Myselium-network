@@ -41,5 +41,6 @@ router.post('/alerts/:alertId/resolve', protect, alertController.resolveAlert);
 
 // --- System Metrics / Health Routes ---
 router.get('/system/health', systemController.getSystemHealth);
+router.get('/system/routes', systemController.getSystemRoutes);
 
 module.exports = router;

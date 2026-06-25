@@ -14,20 +14,7 @@ import {
   Workflow
 } from 'lucide-react';
 
-// Pre-defined static links between nodes
-const MESH_LINKS = [
-  { source: 'node-01', target: 'node-02', type: 'primary' },
-  { source: 'node-01', target: 'node-04', type: 'primary' },
-  { source: 'node-01', target: 'node-03', type: 'backup' },
-  { source: 'node-02', target: 'node-03', type: 'primary' },
-  { source: 'node-02', target: 'node-08', type: 'backup' },
-  { source: 'node-03', target: 'node-05', type: 'primary' },
-  { source: 'node-04', target: 'node-07', type: 'primary' },
-  { source: 'node-05', target: 'node-08', type: 'primary' },
-  { source: 'node-06', target: 'node-03', type: 'backup' },
-  { source: 'node-06', target: 'node-07', type: 'backup' },
-  { source: 'node-07', target: 'node-04', type: 'primary' },
-];
+
 
 interface NodePosition {
   x: number;
@@ -39,6 +26,8 @@ export default function NetworkTopology() {
   const nodes = useSelector((state: RootState) => state.nodes.list);
   const activeAlerts = useSelector((state: RootState) => state.alerts.active);
   const user = useSelector((state: RootState) => state.user.currentUser);
+  const activeLinks = useSelector((state: RootState) => state.nodes.activeLinks || []);
+  const weights = useSelector((state: RootState) => state.nodes.weights || {});
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [nodePositions, setNodePositions] = useState<Record<string, NodePosition>>({});
@@ -166,7 +155,7 @@ export default function NetworkTopology() {
             <rect width="100%" height="100%" fill="url(#grid)" />
 
             {/* 1. Draw Mesh connections */}
-            {MESH_LINKS.map((link, idx) => {
+            {activeLinks.map((link, idx) => {
               const p1 = nodePositions[link.source];
               const p2 = nodePositions[link.target];
               if (!p1 || !p2) return null;
@@ -387,6 +376,19 @@ export default function NetworkTopology() {
                 <div className="flex justify-between text-xs font-mono text-gray-300">
                   <span className="flex items-center gap-1"><Activity size={12} /> Link Quality (LQI)</span>
                   <span>{selectedNodeObj.lqi} / 255</span>
+                </div>
+              </div>
+
+              {/* Mycelium Weight Details */}
+              <div className="space-y-2 border-t border-gray-900 pt-4">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Mycelium Routing Engine</span>
+                <div className="flex justify-between text-xs font-mono text-gray-300">
+                  <span className="flex items-center gap-1"><Workflow size={12} className="text-emerald-400" /> Decision Weight</span>
+                  <span className="text-emerald-400 font-bold">
+                    {weights && weights[selectedNodeObj.nodeId] 
+                      ? weights[selectedNodeObj.nodeId].toFixed(3) 
+                      : (selectedNodeObj.status === 'active' ? '0.740' : '0.000')}
+                  </span>
                 </div>
               </div>
 

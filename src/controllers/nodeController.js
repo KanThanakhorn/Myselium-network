@@ -1,4 +1,5 @@
 const SensorNode = require('../models/SensorNode');
+const { calculateDynamicRoutes } = require('../algorithms/myceliumRouting');
 
 // Seed nodes for database/fallback
 const seedNodes = [
@@ -87,6 +88,41 @@ const seedNodes = [
 // Helper to check if DB is connected
 const isConnected = () => require('mongoose').connection.readyState === 1;
 
+// Helper to recalculate and broadcast dynamic routes
+const recalculateAndBroadcastRoutes = async (req) => {
+  const io = req.app.get('io');
+  let nodes;
+  if (!isConnected()) {
+    nodes = seedNodes;
+  } else {
+    nodes = await SensorNode.find({});
+  }
+  
+  const routingData = calculateDynamicRoutes(nodes);
+  
+  if (io) {
+    io.to('dashboard').emit('routes_update', routingData);
+  }
+
+  if (isConnected()) {
+    try {
+      const RoutingEvent = require('../models/RoutingEvent');
+      const inactiveNodes = nodes.filter(n => n.status !== 'active').map(n => n.nodeId);
+      if (inactiveNodes.length > 0) {
+        await RoutingEvent.create({
+          eventId: `EVT-${Math.floor(1000 + Math.random() * 9000)}`,
+          eventType: 'self-healing',
+          description: `Self-healing routing paths computed. Bypassed offline nodes: ${inactiveNodes.join(', ')}`,
+          affectedNodes: inactiveNodes,
+          timestamp: new Date()
+        });
+      }
+    } catch (e) {
+      console.error('Failed to log routing event:', e);
+    }
+  }
+};
+
 // @desc    Get all nodes
 // @route   GET /api/nodes
 // @access  Public
@@ -163,6 +199,9 @@ exports.recalibrateNode = async (req, res, next) => {
       io.to('dashboard').emit('node_update', updatedNode);
     }
 
+    // Recalculate routes dynamically
+    await recalculateAndBroadcastRoutes(req);
+
     res.status(200).json({
       success: true,
       message: `Node ${nodeId} recalibration sequence completed successfully.`,
@@ -208,6 +247,9 @@ exports.updateNodeStatus = async (req, res, next) => {
     if (io) {
       io.to('dashboard').emit('node_update', updatedNode);
     }
+
+    // Recalculate routes dynamically
+    await recalculateAndBroadcastRoutes(req);
 
     res.status(200).json({
       success: true,
@@ -297,6 +339,9 @@ exports.receiveTelemetry = async (req, res, next) => {
         }
       }
     }
+
+    // Recalculate routes dynamically
+    await recalculateAndBroadcastRoutes(req);
 
     res.status(200).json({ success: true, node: updatedNode });
   } catch (err) {

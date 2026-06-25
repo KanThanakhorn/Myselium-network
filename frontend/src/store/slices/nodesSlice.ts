@@ -123,10 +123,24 @@ const initialMetrics: SystemMetrics = {
   routing: { selfHealingEventsLast24h: 3, deliverySuccessRate: 98.5 }
 };
 
+const MESH_LINKS = [
+  { source: 'node-02', target: 'node-01', type: 'primary' },
+  { source: 'node-03', target: 'node-01', type: 'primary' },
+  { source: 'node-05', target: 'node-02', type: 'primary' },
+  { source: 'node-07', target: 'node-02', type: 'backup' },
+  { source: 'node-08', target: 'node-05', type: 'primary' },
+  { source: 'node-04', target: 'node-08', type: 'primary' },
+  { source: 'node-06', target: 'node-04', type: 'primary' },
+  { source: 'node-07', target: 'node-05', type: 'primary' },
+];
+
 interface NodesState {
   list: SensorNode[];
   selectedNodeId: string | null;
   metrics: SystemMetrics;
+  routes: Record<string, string[]>;
+  activeLinks: Array<{ source: string; target: string; type: string }>;
+  weights: Record<string, number>;
   loading: boolean;
   error: string | null;
 }
@@ -135,6 +149,9 @@ const initialState: NodesState = {
   list: mockNodes,
   selectedNodeId: null,
   metrics: initialMetrics,
+  routes: {},
+  activeLinks: MESH_LINKS,
+  weights: {},
   loading: false,
   error: null,
 };
@@ -166,6 +183,20 @@ export const fetchSystemHealth = createAsyncThunk(
     } catch (err: any) {
       console.log('Using mock system metrics (backend connection bypassed)');
       return initialMetrics;
+    }
+  }
+);
+
+export const fetchRoutes = createAsyncThunk(
+  'nodes/fetchRoutes',
+  async () => {
+    try {
+      const response = await fetch('/api/system/routes');
+      if (!response.ok) throw new Error('Failed to fetch routes');
+      return await response.json();
+    } catch (err: any) {
+      console.log('Using default mock links (backend offline)');
+      return { routes: {}, activeLinks: MESH_LINKS, weights: {} };
     }
   }
 );
@@ -246,6 +277,11 @@ const nodesSlice = createSlice({
         ...action.payload,
         lastUpdate: new Date().toISOString()
       };
+    },
+    updateRealtimeRoutes: (state, action: PayloadAction<{ routes: Record<string, string[]>; activeLinks: Array<{ source: string; target: string; type: string }>; weights: Record<string, number> }>) => {
+      state.routes = action.payload.routes;
+      state.activeLinks = action.payload.activeLinks;
+      state.weights = action.payload.weights;
     }
   },
   extraReducers: (builder) => {
@@ -277,10 +313,15 @@ const nodesSlice = createSlice({
           state.list[index].status = action.payload.status;
           state.list[index].lastUpdate = new Date().toISOString();
         }
+      })
+      .addCase(fetchRoutes.fulfilled, (state, action: PayloadAction<any>) => {
+        state.routes = action.payload.routes;
+        state.activeLinks = action.payload.activeLinks;
+        state.weights = action.payload.weights;
       });
   },
 });
 
-export const { selectNode, updateRealtimeNode, updateMetrics } = nodesSlice.actions;
+export const { selectNode, updateRealtimeNode, updateMetrics, updateRealtimeRoutes } = nodesSlice.actions;
 
 export default nodesSlice.reducer;

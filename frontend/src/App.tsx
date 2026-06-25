@@ -24,6 +24,7 @@ import {
 import type { Alert } from './types';
 import { addNotification } from './store/slices/uiSlice';
 import { addRealtimeAlert, acknowledgeAllAlerts } from './store/slices/alertsSlice';
+import { fetchNodes, fetchRoutes, fetchSystemHealth } from './store/slices/nodesSlice';
 
 
 function App() {
@@ -46,6 +47,13 @@ function App() {
       document.body.style.color = '#111827';
     }
   }, [darkMode]);
+
+  // Fetch initial telemetry and dynamic routing data
+  useEffect(() => {
+    dispatch(fetchNodes() as any);
+    dispatch(fetchRoutes() as any);
+    dispatch(fetchSystemHealth() as any);
+  }, [dispatch]);
 
   // Handle Quick Actions
   const handleAcknowledgeAll = () => {
