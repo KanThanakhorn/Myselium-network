@@ -12,9 +12,19 @@ interface AlertModalProps {
   onClose: () => void;
 }
 
-const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
+const AlertModal: React.FC<AlertModalProps> = ({ alert: propAlert, onClose }) => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: RootState) => state.user);
+
+  // Retrieve the fresh alert object from Redux state to avoid stale props
+  const alert = useSelector((state: RootState) => {
+    if (!propAlert) return null;
+    const active = state.alerts.active.find(a => a.alertId === propAlert.alertId || a._id === propAlert._id);
+    if (active) return active;
+    const history = state.alerts.history.find(a => a.alertId === propAlert.alertId || a._id === propAlert._id);
+    return history || propAlert;
+  });
+
   const [actionTaken, setActionTaken] = useState('');
   const [isResolving, setIsResolving] = useState(false);
 
@@ -30,6 +40,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert, onClose }) => {
       message: `รับทราบการแจ้งเตือน ${alert.alertId} แล้ว`,
       type: 'success',
     }));
+    onClose(); // ปิด popup ทันทีและกลับมาที่เดิม
   };
 
   const handleResolveSubmit = (e: React.FormEvent) => {
