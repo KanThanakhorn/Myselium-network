@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
-import { setDarkMode } from '../../store/slices/uiSlice';
-import { Sun, Moon, Wifi, WifiOff, User as UserIcon, LogOut } from 'lucide-react';
+import { setDarkMode, removeNotification, clearNotifications } from '../../store/slices/uiSlice';
+import { Sun, Moon, Wifi, WifiOff, User as UserIcon, LogOut, Bell, BellOff, Trash2, X, AlertOctagon, AlertTriangle, CheckCircle, Info } from 'lucide-react';
 import { logout } from '../../store/slices/userSlice';
 
 interface HeaderProps {
@@ -13,7 +13,23 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
   const dispatch = useDispatch();
   const darkMode = useSelector((state: RootState) => state.ui.darkMode);
   const activeTab = useSelector((state: RootState) => state.ui.activeTab);
+  const notifications = useSelector((state: RootState) => state.ui.notifications);
   const { currentUser } = useSelector((state: RootState) => state.user);
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const getTabTitle = (tab: string) => {
     switch (tab) {
@@ -66,6 +82,89 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
                 <WifiOff size={11} /> ข้อมูลออฟไลน์
               </span>
             </>
+          )}
+        </div>
+
+        {/* Notification Bell Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="text-text-sub hover:text-text-main p-2 rounded-xl bg-bg-surface-elevated hover:bg-bg-surface-elevated/80 border border-border-main transition-colors focus:outline-none relative cursor-pointer flex items-center justify-center"
+            title="การแจ้งเตือน"
+            aria-label="Notifications"
+          >
+            <Bell size={16} className={notifications.length > 0 ? "animate-pulse text-primary-500" : ""} />
+            {notifications.length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm">
+                {notifications.length}
+              </span>
+            )}
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2.5 w-80 glass-panel border border-border-main rounded-2xl shadow-xl z-50 py-3 bg-bg-surface/95 backdrop-blur-md animate-fade-in flex flex-col max-h-[350px]">
+              {/* Dropdown Header */}
+              <div className="flex items-center justify-between px-4 pb-2 border-b border-border-main/50">
+                <span className="text-xs font-bold text-text-main">การแจ้งเตือน ({notifications.length})</span>
+                {notifications.length > 0 && (
+                  <button
+                    onClick={() => dispatch(clearNotifications())}
+                    className="text-[10px] text-red-500 hover:text-red-600 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <Trash2 size={10} /> ล้างทั้งหมด
+                  </button>
+                )}
+              </div>
+
+              {/* Dropdown List */}
+              <div className="overflow-y-auto flex-1 divide-y divide-border-main/20">
+                {notifications.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 px-4 text-center text-text-muted">
+                    <BellOff size={22} className="mb-2 opacity-50 text-text-sub" />
+                    <p className="text-xs font-semibold">ไม่มีการแจ้งเตือนในขณะนี้</p>
+                  </div>
+                ) : (
+                  notifications.map((toast) => {
+                    let Icon = Info;
+                    let iconColor = 'text-blue-500';
+                    if (toast.type === 'error') {
+                      Icon = AlertOctagon;
+                      iconColor = 'text-red-500';
+                    } else if (toast.type === 'warning') {
+                      Icon = AlertTriangle;
+                      iconColor = 'text-amber-500';
+                    } else if (toast.type === 'success') {
+                      Icon = CheckCircle;
+                      iconColor = 'text-emerald-500';
+                    }
+
+                    return (
+                      <div key={toast.id} className="p-3 hover:bg-bg-surface-elevated/40 transition-colors flex items-start gap-2.5 group">
+                        <div className={`mt-0.5 shrink-0 ${iconColor}`}>
+                          <Icon size={14} />
+                        </div>
+                        <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+                          <p className="text-xs text-text-sub font-semibold leading-snug break-words pr-1">{toast.message}</p>
+                          <span className="text-[8px] text-text-muted font-mono">
+                            {new Date(toast.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(removeNotification(toast.id));
+                          }}
+                          className="text-text-muted hover:text-text-main p-1 rounded-lg hover:bg-bg-surface-elevated transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                          title="ลบ"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
           )}
         </div>
 
