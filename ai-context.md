@@ -124,6 +124,7 @@ This document tracks the implementation progress of the server-side admin dashbo
 - [x] Real-time Mycelium Routing Table View (Destination node, primary path, next hop, weight score, and dynamic self-healing status)
 - [x] Interactive Neighbor Discovery & Formula Weight Breakdown (Neighbor RSSI, LQI, distance, and candidate node weights; step-by-step breakdown of $W_{total} = (0.5 \times E_{residual}) + (0.3 \times RSSI_{reliability}) + (0.2 \times D_{proximity})$ with dominant factor highlighting)
 - [x] Live Routing Decision Explanations Log (Thai localized live log feed with timestamp and automatic scroll, listening to node deactivations and path changes)
+- [x] Depleted Battery Safety Enforcement (Frontend disabled button, error notifications, backend telemetry & API checks preventing activating 0% battery nodes)
 - [x] Complete Production Compilation Verification (`npm run build` succeeds)
 
 ---
