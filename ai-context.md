@@ -125,6 +125,7 @@ This document tracks the implementation progress of the server-side admin dashbo
 - [x] Interactive Neighbor Discovery & Formula Weight Breakdown (Neighbor RSSI, LQI, distance, and candidate node weights; step-by-step breakdown of $W_{total} = (0.5 \times E_{residual}) + (0.3 \times RSSI_{reliability}) + (0.2 \times D_{proximity})$ with dominant factor highlighting)
 - [x] Live Routing Decision Explanations Log (Thai localized live log feed with timestamp and automatic scroll, listening to node deactivations and path changes)
 - [x] Depleted Battery Safety Enforcement (Frontend disabled button, error notifications, backend telemetry & API checks preventing activating 0% battery nodes)
+- [x] Revamped Notification System (Removed bottom-right toast popups, replaced with a beautiful Bell dropdown next to the dark mode switcher in the Header, containing unread counts, colored alert icons, individual/bulk dismissal, while retaining custom Web Audio alarms)
 - [x] Complete Production Compilation Verification (`npm run build` succeeds)
 
 ---
