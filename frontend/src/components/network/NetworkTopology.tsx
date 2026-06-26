@@ -367,6 +367,11 @@ export default function NetworkTopology() {
   let formulaDetails = null;
   let neighborsDetails: Array<{ id: string; rssi: number; lqi: number; distance: number; weight: number; status: string }> = [];
 
+  // Larger node sizes (radius base = 9, multiplier = 4)
+  const getNodeRadius = (battery: number) => {
+    return 9 + (battery / 100) * 4;
+  };
+
   if (selectedNodeObj) {
     const isGateway = selectedNodeObj.nodeId === 'node-01';
     
@@ -443,10 +448,10 @@ export default function NetworkTopology() {
     <div className="px-6 space-y-6">
 
       {/* Topology Header Panel */}
-      <div className="glass-panel rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-bg-surface border-border-main">
+      <div className="glass-panel rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-bg-surface border-border-main">
         <div>
-          <h2 className="text-sm font-bold text-text-main flex items-center gap-2">
-            <Workflow className="text-primary-500" size={18} />
+          <h2 className="text-base font-bold text-text-main flex items-center gap-2">
+            <Workflow className="text-primary-500" size={20} />
             แผงควบคุมและแผนผังเครือข่ายหาเส้นทาง Mycelium
           </h2>
           <p className="text-xs text-text-sub mt-0.5">
@@ -459,62 +464,62 @@ export default function NetworkTopology() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Network SVG Canvas panel */}
-        <div className="glass-panel rounded-3xl p-4 lg:col-span-2 relative overflow-hidden flex flex-col items-center bg-bg-surface-elevated/20 border-border-main">
+        <div className="glass-panel rounded-3xl p-5 lg:col-span-2 relative overflow-hidden flex flex-col items-center bg-bg-surface-elevated/20 border-border-main">
 
           {/* Canvas Legend */}
-          <div className="absolute top-4 left-4 bg-bg-surface/90 border border-border-main rounded-2xl p-3 flex flex-col gap-1.5 text-[9px] text-text-sub backdrop-blur-md z-10 shadow-md">
+          <div className="absolute top-4 left-4 bg-bg-surface/90 border border-border-main rounded-2xl p-4 flex flex-col gap-2 text-xs text-text-sub backdrop-blur-md z-10 shadow-md">
             <span className="font-bold text-text-main mb-0.5">คำอธิบายสถานะ</span>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
               <span>ออนไลน์ปกติ</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <span className="w-3 h-3 rounded-full bg-amber-500"></span>
               <span>แบตเตอรี่ต่ำ (&lt; 30%)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
               <span>ออฟไลน์ / ตรวจพบไฟไหม้</span>
             </div>
-            <div className="border-t border-border-main my-1 pt-1 font-bold text-text-main">ลิงก์เส้นทางวิทยุ</div>
+            <div className="border-t border-border-main my-1 pt-1.5 font-bold text-text-main">ลิงก์เส้นทางวิทยุ</div>
             <div className="flex items-center gap-2">
-              <span className="w-4 h-0.5 bg-emerald-500"></span>
+              <span className="w-5 h-0.5 bg-emerald-500"></span>
               <span>เส้นทางหลัก (Primary Path)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-4 h-0.5 border-t border-dashed border-amber-500"></span>
+              <span className="w-5 h-0.5 border-t border-dashed border-amber-500"></span>
               <span>เส้นทางสำรอง (Backup Path)</span>
             </div>
           </div>
 
           {/* Zoom/Pan Controls */}
-          <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10">
+          <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
             <button
               onClick={handleZoomIn}
-              className="w-8 h-8 rounded-xl bg-bg-surface border border-border-main text-text-main hover:bg-bg-surface-elevated transition-colors flex items-center justify-center shadow-sm focus:outline-none cursor-pointer"
+              className="w-10 h-10 rounded-2xl bg-bg-surface border border-border-main text-text-main hover:bg-bg-surface-elevated transition-colors flex items-center justify-center shadow-sm focus:outline-none cursor-pointer"
               title="Zoom In"
             >
-              <Plus size={14} />
+              <Plus size={18} />
             </button>
             <button
               onClick={handleZoomOut}
-              className="w-8 h-8 rounded-xl bg-bg-surface border border-border-main text-text-main hover:bg-bg-surface-elevated transition-colors flex items-center justify-center shadow-sm focus:outline-none cursor-pointer"
+              className="w-10 h-10 rounded-2xl bg-bg-surface border border-border-main text-text-main hover:bg-bg-surface-elevated transition-colors flex items-center justify-center shadow-sm focus:outline-none cursor-pointer"
               title="Zoom Out"
             >
-              <Minus size={14} />
+              <Minus size={18} />
             </button>
             <button
               onClick={handleReset}
-              className="w-8 h-8 rounded-xl bg-bg-surface border border-border-main text-text-main hover:bg-bg-surface-elevated transition-colors flex items-center justify-center shadow-sm focus:outline-none cursor-pointer"
+              className="w-10 h-10 rounded-2xl bg-bg-surface border border-border-main text-text-main hover:bg-bg-surface-elevated transition-colors flex items-center justify-center shadow-sm focus:outline-none cursor-pointer"
               title="Reset View"
             >
-              <RotateCcw size={13} />
+              <RotateCcw size={16} />
             </button>
           </div>
 
           {/* SVG Map Canvas */}
           {nodes.length === 0 ? (
-            <div className="w-full aspect-[8/5] flex items-center justify-center text-text-muted text-xs font-semibold">
+            <div className="w-full aspect-[8/5] flex items-center justify-center text-text-muted text-sm font-semibold">
               ไม่มีข้อมูลโหนดสำหรับแสดงโครงข่าย
             </div>
           ) : (
@@ -542,10 +547,10 @@ export default function NetworkTopology() {
                 <marker
                   id="arrow-head-primary"
                   viewBox="0 0 10 10"
-                  refX="20" // shifted to avoid overlapping node circle
+                  refX="25" // shifted further away to accommodate larger node circles
                   refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
+                  markerWidth="7"
+                  markerHeight="7"
                   orient="auto-start-reverse"
                 >
                   <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10b981" />
@@ -554,10 +559,10 @@ export default function NetworkTopology() {
                 <marker
                   id="arrow-head-backup"
                   viewBox="0 0 10 10"
-                  refX="20"
+                  refX="25"
                   refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
+                  markerWidth="7"
+                  markerHeight="7"
                   orient="auto-start-reverse"
                 >
                   <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
@@ -618,15 +623,15 @@ export default function NetworkTopology() {
                         x2={p2.x}
                         y2={p2.y}
                         stroke={strokeColor}
-                        strokeWidth={isHighlighted ? 3 : 1.8}
-                        strokeDasharray={link.type === 'backup' ? '4,4' : undefined}
+                        strokeWidth={isHighlighted ? 4.5 : 2.5}
+                        strokeDasharray={link.type === 'backup' ? '5,5' : undefined}
                         markerEnd={link.type === 'primary' ? 'url(#arrow-head-primary)' : 'url(#arrow-head-backup)'}
                         filter={link.type === 'primary' && !isDisconnected ? 'url(#glow-effect)' : undefined}
                         className="transition-all duration-300"
                       />
                       {/* 4. Draw packet flow animation circles along active primary links */}
                       {!isDisconnected && link.type === 'primary' && (
-                        <circle r="4.5" fill="#34d399" filter="url(#glow-effect)">
+                        <circle r="5.5" fill="#34d399" filter="url(#glow-effect)">
                           <animateMotion
                             dur="3s"
                             repeatCount="indefinite"
@@ -667,7 +672,7 @@ export default function NetworkTopology() {
                   }
 
                   const isSelected = selectedNodeId === node.nodeId;
-                  const radius = 6 + (node.battery / 100) * 3;
+                  const radius = getNodeRadius(node.battery);
 
                   // Render Gateway (node-01) with custom structure and transmitter animations
                   if (isGateway) {
@@ -684,12 +689,12 @@ export default function NetworkTopology() {
                         className="cursor-pointer group"
                       >
                         {/* Pulsing Signal Wave Animations */}
-                        <circle cx="0" cy="-8" r="4" fill="none" stroke="#10b981" strokeWidth="1.2">
-                          <animate attributeName="r" values="4;16" dur="2.5s" repeatCount="indefinite" />
+                        <circle cx="0" cy="-10" r="5" fill="none" stroke="#10b981" strokeWidth="1.5">
+                          <animate attributeName="r" values="5;20" dur="2.5s" repeatCount="indefinite" />
                           <animate attributeName="opacity" values="0.8;0" dur="2.5s" repeatCount="indefinite" />
                         </circle>
-                        <circle cx="0" cy="-8" r="4" fill="none" stroke="#10b981" strokeWidth="1.2">
-                          <animate attributeName="r" values="4;24" dur="2.5s" begin="1.25s" repeatCount="indefinite" />
+                        <circle cx="0" cy="-10" r="5" fill="none" stroke="#10b981" strokeWidth="1.5">
+                          <animate attributeName="r" values="5;30" dur="2.5s" begin="1.25s" repeatCount="indefinite" />
                           <animate attributeName="opacity" values="0.8;0" dur="2.5s" begin="1.25s" repeatCount="indefinite" />
                         </circle>
 
@@ -697,38 +702,38 @@ export default function NetworkTopology() {
                         <circle
                           cx="0"
                           cy="0"
-                          r="15"
+                          r="18"
                           fill="none"
                           stroke={isSelected ? '#3b82f6' : 'transparent'}
-                          strokeWidth="2"
+                          strokeWidth="2.5"
                           className="transition-all duration-300"
                         />
 
                         {/* Radio Tower Base Structure */}
                         <polygon
-                          points="-8,10 8,10 0,-8"
+                          points="-10,12 10,12 0,-10"
                           fill={darkMode ? "#047857" : "#a7f3d0"}
                           stroke="#10b981"
-                          strokeWidth="2"
+                          strokeWidth="2.5"
                           filter="url(#glow-effect)"
                         />
                         {/* Antenna Transmitter Tip */}
-                        <circle cx="0" cy="-8" r="3.5" fill="#10b981" stroke="#ffffff" strokeWidth="1" />
+                        <circle cx="0" cy="-10" r="4.5" fill="#10b981" stroke="#ffffff" strokeWidth="1.5" />
 
                         {/* Gateway Text Badge */}
                         <text
-                          y={19}
+                          y={23}
                           textAnchor="middle"
                           fill="#10b981"
-                          className="text-[9px] font-mono font-bold uppercase tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+                          className="text-[10px] font-mono font-bold uppercase tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
                         >
                           GATEWAY
                         </text>
                         <text
-                          y={-14}
+                          y={-17}
                           textAnchor="middle"
                           fill={isSelected ? '#3b82f6' : (darkMode ? '#ffffff' : '#111827')}
-                          className="text-[9px] font-mono font-bold tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+                          className="text-xs font-mono font-bold tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
                         >
                           {node.nodeId}
                         </text>
@@ -754,11 +759,11 @@ export default function NetworkTopology() {
                           r={radius}
                           fill="none"
                           stroke={hasAlert ? '#ef4444' : '#3b82f6'}
-                          strokeWidth="1.5"
+                          strokeWidth="2"
                         >
                           <animate
                             attributeName="r"
-                            values={`${radius};${radius + 12}`}
+                            values={`${radius};${radius + 15}`}
                             dur="2s"
                             repeatCount="indefinite"
                           />
@@ -773,10 +778,10 @@ export default function NetworkTopology() {
 
                       {/* Outer selection ring */}
                       <circle
-                        r={radius + 3}
+                        r={radius + 4}
                         fill="none"
                         stroke={isSelected ? '#3b82f6' : ringColor}
-                        strokeWidth={isSelected ? 2 : 1}
+                        strokeWidth={isSelected ? 2.5 : 1.2}
                         className="transition-all duration-300 group-hover:scale-110"
                       />
 
@@ -790,10 +795,10 @@ export default function NetworkTopology() {
 
                       {/* Node Label Text */}
                       <text
-                        y={-radius - 6}
+                        y={-radius - 8}
                         textAnchor="middle"
                         fill={isSelected ? '#3b82f6' : (darkMode ? '#ffffff' : '#111827')}
-                        className="text-[9px] font-mono font-bold tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+                        className="text-xs font-mono font-bold tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
                       >
                         {node.nodeId}
                       </text>
@@ -813,78 +818,78 @@ export default function NetworkTopology() {
               {/* Header: Node Details */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-base font-bold text-text-main font-mono">{selectedNodeObj.nodeId}</span>
+                  <span className="text-lg font-bold text-text-main font-mono">{selectedNodeObj.nodeId}</span>
                   {selectedNodeObj.status === 'active' ? (
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                       ออนไลน์
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-bg-surface-elevated text-text-muted border border-border-main">
+                    <span className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-bg-surface-elevated text-text-muted border border-border-main">
                       ออฟไลน์
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs text-text-sub flex items-center gap-1 font-medium">
-                  <MapPin size={12} className="text-emerald-500" />
+                <p className="text-sm text-text-sub flex items-center gap-1.5 font-semibold">
+                  <MapPin size={14} className="text-emerald-500" />
                   {selectedNodeObj.metadata?.location_name || 'จุดเฝ้าระวังพื้นที่ป่า'}
                 </p>
-                <span className="text-[10px] text-text-muted font-mono font-semibold block">
+                <span className="text-xs text-text-muted font-mono font-semibold block">
                   พิกัดตำแหน่ง: {selectedNodeObj.location.lat.toFixed(5)}, {selectedNodeObj.location.lng.toFixed(5)}
                 </span>
               </div>
 
               {/* Metrics gauges */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-3">
-                  <span className="text-[9px] font-mono font-bold text-text-muted uppercase">อุณหภูมิ</span>
-                  <div className="text-xs font-bold text-text-main mt-1">
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4">
+                  <span className="text-[10px] font-mono font-bold text-text-muted uppercase">อุณหภูมิ</span>
+                  <div className="text-sm font-extrabold text-text-main mt-1">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.temp.toFixed(1)}°C`}
                   </div>
                 </div>
 
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-3">
-                  <span className="text-[9px] font-mono font-bold text-text-muted uppercase">ความหนาแน่นควัน</span>
-                  <div className="text-xs font-bold text-text-main mt-1">
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4">
+                  <span className="text-[10px] font-mono font-bold text-text-muted uppercase">ความหนาแน่นควัน</span>
+                  <div className="text-sm font-extrabold text-text-main mt-1">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.smoke} ppm`}
                   </div>
                 </div>
 
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-3">
-                  <span className="text-[9px] font-mono font-bold text-text-muted uppercase">ความชื้น</span>
-                  <div className="text-xs font-bold text-text-main mt-1">
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4">
+                  <span className="text-[10px] font-mono font-bold text-text-muted uppercase">ความชื้น</span>
+                  <div className="text-sm font-extrabold text-text-main mt-1">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.humidity.toFixed(0)}%`}
                   </div>
                 </div>
 
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-3 flex flex-col justify-between">
-                  <span className="text-[9px] font-mono font-bold text-text-muted uppercase">ระดับแบตเตอรี่</span>
-                  <div className="text-xs font-bold text-text-main mt-1 flex items-center gap-1">
-                    <Battery size={13} className={selectedNodeObj.battery < 20 ? 'text-red-500 animate-pulse' : 'text-emerald-500'} />
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4 flex flex-col justify-between">
+                  <span className="text-[10px] font-mono font-bold text-text-muted uppercase">ระดับแบตเตอรี่</span>
+                  <div className="text-sm font-extrabold text-text-main mt-1 flex items-center gap-1.5">
+                    <Battery size={15} className={selectedNodeObj.battery < 20 ? 'text-red-500 animate-pulse' : 'text-emerald-500'} />
                     {selectedNodeObj.battery}%
                   </div>
                 </div>
               </div>
 
               {/* Link Details */}
-              <div className="space-y-2 border-t border-border-main pt-4">
-                <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider block">สัญญาณวิทยุเชื่อมต่อ</span>
-                <div className="flex justify-between text-xs font-mono text-text-sub font-semibold">
-                  <span className="flex items-center gap-1"><Signal size={12} /> RSSI</span>
+              <div className="space-y-3 border-t border-border-main pt-5">
+                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">สัญญาณวิทยุเชื่อมต่อ</span>
+                <div className="flex justify-between text-sm font-mono text-text-sub font-semibold">
+                  <span className="flex items-center gap-1.5"><Signal size={14} /> RSSI</span>
                   <span className="text-text-main">{selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.rssi} dBm`}</span>
                 </div>
-                <div className="flex justify-between text-xs font-mono text-text-sub font-semibold">
-                  <span className="flex items-center gap-1"><Activity size={12} /> คุณภาพสัญญาณ (LQI)</span>
+                <div className="flex justify-between text-sm font-mono text-text-sub font-semibold">
+                  <span className="flex items-center gap-1.5"><Activity size={14} /> คุณภาพสัญญาณ (LQI)</span>
                   <span className="text-text-main">{selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.lqi} / 255`}</span>
                 </div>
               </div>
 
               {/* Mycelium Weight Details */}
-              <div className="space-y-2 border-t border-border-main pt-4">
-                <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider block">ระบบหาเส้นทาง Mycelium</span>
-                <div className="flex justify-between text-xs font-mono text-text-sub font-semibold">
-                  <span className="flex items-center gap-1"><Workflow size={12} className="text-primary-500" /> ค่าน้ำหนักตัดสินใจ (Weight)</span>
-                  <span className="text-primary-600 dark:text-primary-400 font-bold">
+              <div className="space-y-3 border-t border-border-main pt-5">
+                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">ระบบหาเส้นทาง Mycelium</span>
+                <div className="flex justify-between text-sm font-mono text-text-sub font-semibold">
+                  <span className="flex items-center gap-1.5"><Workflow size={14} className="text-primary-500" /> ค่าน้ำหนักตัดสินใจ (Weight)</span>
+                  <span className="text-primary-600 dark:text-primary-400 font-extrabold text-base">
                     {weights && weights[selectedNodeObj.nodeId]
                       ? weights[selectedNodeObj.nodeId].toFixed(3)
                       : (selectedNodeObj.status === 'active' ? '0.740' : '0.000')}
@@ -894,39 +899,39 @@ export default function NetworkTopology() {
 
               {/* Action Buttons: Calibrate/Toggle */}
               {user && (user.role === 'admin' || user.role === 'ranger') ? (
-                <div className="flex gap-3 border-t border-border-main pt-4 mt-auto">
+                <div className="flex gap-3 border-t border-border-main pt-5 mt-auto animate-fade-in">
                   <button
                     disabled={isCalibrating || selectedNodeObj.status === 'dead'}
                     onClick={() => handleRecalibrate(selectedNodeObj.nodeId)}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold bg-bg-surface hover:bg-bg-surface-elevated text-text-main border border-border-main transition-colors disabled:opacity-50 focus:outline-none cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold bg-bg-surface hover:bg-bg-surface-elevated text-text-main border border-border-main transition-colors disabled:opacity-50 focus:outline-none cursor-pointer"
                   >
-                    <RefreshCw className={isCalibrating ? 'animate-spin' : ''} size={13} />
+                    <RefreshCw className={isCalibrating ? 'animate-spin' : ''} size={14} />
                     {isCalibrating ? 'ปรับเทียบ...' : 'ปรับเทียบใหม่'}
                   </button>
 
                   <button
                     onClick={() => handleToggleStatus(selectedNodeObj)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-white transition-colors focus:outline-none cursor-pointer ${selectedNodeObj.status === 'active'
+                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold text-white transition-colors focus:outline-none cursor-pointer ${selectedNodeObj.status === 'active'
                         ? 'bg-red-500 hover:bg-red-600'
                         : 'bg-emerald-500 hover:bg-emerald-600'
                       }`}
                   >
-                    <Power size={13} />
+                    <Power size={14} />
                     {selectedNodeObj.status === 'active' ? 'ปิดทำงาน' : 'เปิดทำงาน'}
                   </button>
                 </div>
               ) : (
-                <div className="p-3 bg-bg-surface-elevated/40 border border-border-main rounded-xl text-[10px] text-text-muted leading-normal mt-4">
+                <div className="p-4 bg-bg-surface-elevated/40 border border-border-main rounded-xl text-xs text-text-muted leading-normal mt-4">
                   🔒 เข้าสู่ระบบในฐานะเจ้าหน้าที่หรือผู้ดูแลระบบเพื่อแก้ไขค่าอุปกรณ์
                 </div>
               )}
 
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center my-auto space-y-3">
-              <Workflow className="text-text-muted" size={32} />
-              <div className="text-xs text-text-main font-bold">เลือกโหนดเพื่อตรวจสอบ</div>
-              <p className="text-[10px] text-text-sub max-w-[200px] leading-relaxed font-medium">
+            <div className="flex flex-col items-center justify-center text-center my-auto space-y-4">
+              <Workflow className="text-text-muted" size={40} />
+              <div className="text-sm text-text-main font-bold">เลือกโหนดเพื่อตรวจสอบ</div>
+              <p className="text-xs text-text-sub max-w-[220px] leading-relaxed font-semibold">
                 คลิกที่จุดโหนดเซนเซอร์บนแผนที่เพื่อดูข้อมูลค่าเซนเซอร์ พิกัด และคุณภาพสัญญาณแบบสด
               </p>
             </div>
@@ -935,309 +940,311 @@ export default function NetworkTopology() {
 
       </div>
 
-      {/* BOTTOM SECTION: MYCELIUM ROUTING PARADIGMS & EXPLAINER FEED */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* BOTTOM SECTION: MYCELIUM ROUTING PARADIGMS & EXPLAINER FEED (RE-ARRANGED WIDE LAYOUT) */}
+      <div className="space-y-6">
 
-        {/* Left Column: Routing Tables & Formulas (lg:col-span-2) */}
-        <div className="lg:col-span-2 space-y-6">
-
-          {/* 6. Routing Table View */}
-          <div className="glass-panel rounded-3xl p-6 bg-bg-surface border-border-main shadow-sm flex flex-col justify-between">
-            <div className="flex items-center gap-2 mb-4">
-              <Workflow className="text-primary-500 animate-pulse" size={16} />
-              <h3 className="text-xs font-bold text-text-main uppercase tracking-wider">
-                ตารางเส้นทางการเชื่อมต่อระบบหาเส้นทาง Mycelium
-              </h3>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead>
-                  <tr className="border-b border-border-main/60 text-text-muted font-bold">
-                    <th className="pb-3 pl-1">โหนดต้นทาง</th>
-                    <th className="pb-3">เส้นทางจัดลำดับหลัก (Primary Path)</th>
-                    <th className="pb-3">โหนดถัดไป</th>
-                    <th className="pb-3 text-center">ค่าน้ำหนักหลัก</th>
-                    <th className="pb-3 text-right pr-1">สถานะลิงก์</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-main/30 text-text-sub font-medium font-mono">
-                  {nodes.filter(n => n.nodeId !== 'node-01').map((node) => {
-                    const hasPath = routes[node.nodeId] && routes[node.nodeId].length > 0;
-                    const nextHop = routes[node.nodeId]?.[1] || '—';
-                    const weightVal = weights[node.nodeId] ? weights[node.nodeId].toFixed(4) : '0.0000';
-                    const isOffline = node.status === 'dead' || node.status === 'inactive';
-                    
-                    let statusLabel = 'ปกติ';
-                    let statusClass = 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20';
-
-                    if (isOffline) {
-                      statusLabel = 'ออฟไลน์';
-                      statusClass = 'text-text-muted bg-bg-surface-elevated border border-border-main';
-                    } else if (!hasPath) {
-                      statusLabel = 'ตัดการเชื่อมต่อ';
-                      statusClass = 'text-red-500 bg-red-500/10 border border-red-500/20';
-                    } else {
-                      // Check if self-healing bypassed any inactive nodes
-                      const inactiveNodes = nodes.filter(n => n.status !== 'active').map(n => n.nodeId);
-                      const hasSelfHealed = routes[node.nodeId].some((step: string) => inactiveNodes.includes(step) === false) && inactiveNodes.length > 0;
-                      if (hasSelfHealed) {
-                        statusLabel = 'ฟื้นฟูตัวเองสำเร็จ';
-                        statusClass = 'text-amber-500 bg-amber-500/10 border border-amber-500/20';
-                      }
-                    }
-
-                    return (
-                      <tr 
-                        key={node.nodeId} 
-                        onClick={() => setSelectedNodeId(node.nodeId)}
-                        className={`hover:bg-bg-surface-elevated/40 cursor-pointer transition-colors ${selectedNodeId === node.nodeId ? 'bg-bg-surface-elevated/65' : ''}`}
-                      >
-                        <td className="py-3 font-bold text-text-main pl-1">{node.nodeId}</td>
-                        <td className="py-3 text-xs">
-                          {isOffline ? (
-                            <span className="text-text-muted">อุปกรณ์ปิดการทำงาน</span>
-                          ) : (
-                            <span className="flex items-center gap-1">
-                              {getPathString(node.nodeId)}
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-3 font-bold text-text-main">{isOffline ? '—' : nextHop}</td>
-                        <td className="py-3 text-center text-primary-600 dark:text-primary-400 font-bold">{isOffline ? '0.0000' : weightVal}</td>
-                        <td className="py-3 text-right pr-1">
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusClass}`}>
-                            {statusLabel}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+        {/* ROW 1: Wide Routing Table View (For clarity and no squeezing) */}
+        <div className="glass-panel rounded-3xl p-6 bg-bg-surface border-border-main shadow-sm flex flex-col justify-between">
+          <div className="flex items-center gap-2.5 mb-5">
+            <Workflow className="text-primary-500 animate-pulse" size={18} />
+            <h3 className="text-sm font-bold text-text-main uppercase tracking-wider">
+              ตารางเส้นทางการเชื่อมต่อระบบหาเส้นทาง Mycelium (Routing Path Table)
+            </h3>
           </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead>
+                <tr className="border-b border-border-main/60 text-text-muted font-bold">
+                  <th className="pb-3 pl-1 text-sm">โหนดต้นทาง</th>
+                  <th className="pb-3 text-sm">เส้นทางจัดลำดับหลัก (Primary Path)</th>
+                  <th className="pb-3 text-sm">โหนดถัดไป (Next Hop)</th>
+                  <th className="pb-3 text-center text-sm">ค่าน้ำหนักตัดสินใจ</th>
+                  <th className="pb-3 text-right pr-1 text-sm">สถานะเส้นทาง</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border-main/30 text-text-sub font-semibold font-mono">
+                {nodes.filter(n => n.nodeId !== 'node-01').map((node) => {
+                  const hasPath = routes[node.nodeId] && routes[node.nodeId].length > 0;
+                  const nextHop = routes[node.nodeId]?.[1] || '—';
+                  const weightVal = weights[node.nodeId] ? weights[node.nodeId].toFixed(4) : '0.0000';
+                  const isOffline = node.status === 'dead' || node.status === 'inactive';
+                  
+                  let statusLabel = 'ปกติ';
+                  let statusClass = 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20';
 
-          {/* Selected Node Details: Formula calculation & Neighbors discovery table */}
-          {selectedNodeObj ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-              
-              {/* Weight calculation step-by-step formula */}
-              <div className="glass-panel rounded-3xl p-5 bg-bg-surface border-border-main flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="text-primary-500" size={16} />
-                      <h4 className="text-xs font-bold text-text-main uppercase tracking-wider">
-                        สูตรถ่วงน้ำหนัก Mycelium (Energy-Aware)
-                      </h4>
-                    </div>
-                  </div>
+                  if (isOffline) {
+                    statusLabel = 'ออฟไลน์';
+                    statusClass = 'text-text-muted bg-bg-surface-elevated border border-border-main';
+                  } else if (!hasPath) {
+                    statusLabel = 'ตัดการเชื่อมต่อ';
+                    statusClass = 'text-red-500 bg-red-500/10 border border-red-500/20';
+                  } else {
+                    // Check if self-healing bypassed any inactive nodes
+                    const inactiveNodes = nodes.filter(n => n.status !== 'active').map(n => n.nodeId);
+                    const hasSelfHealed = routes[node.nodeId].some((step: string) => inactiveNodes.includes(step) === false) && inactiveNodes.length > 0;
+                    if (hasSelfHealed) {
+                      statusLabel = 'ฟื้นฟูตัวเองสำเร็จ';
+                      statusClass = 'text-amber-500 bg-amber-500/10 border border-amber-500/20';
+                    }
+                  }
 
-                  {selectedNodeObj.nodeId === 'node-01' ? (
-                    <div className="flex items-center gap-2 p-4 bg-bg-surface-elevated/30 border border-border-main rounded-2xl my-auto text-xs text-text-sub">
-                      <Info size={14} className="text-primary-500" />
-                      <span>โหนดเกตเวย์กลาง (Gateway node) ทำหน้าที่รับข้อมูลโดยตรง ไม่จำเป็นต้องคำนวณสูตรหาเส้นทางส่งต่อ</span>
-                    </div>
-                  ) : formulaDetails ? (
-                    <div className="space-y-4">
-                      {/* Formula display */}
-                      <div className="bg-bg-surface-elevated/50 border border-border-main p-3 rounded-2xl text-center">
-                        <span className="text-[10px] text-text-muted font-mono block mb-1">สมการถ่วงน้ำหนักรวม</span>
-                        <div className="text-xs font-mono font-bold text-primary-600 dark:text-primary-400">
-                          W = (0.5 × E) + (0.3 × R) + (0.2 × D)
-                        </div>
-                      </div>
-
-                      {/* Calculations breakdown */}
-                      <div className="space-y-2">
-                        {/* Battery */}
-                        <div className={`p-2.5 border rounded-xl flex items-center justify-between transition-all ${formulaDetails.dominant === 'battery' ? 'border-emerald-500/40 bg-emerald-500/5 shadow-sm' : 'border-border-main bg-bg-surface-elevated/20'}`}>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-[10px] font-bold text-text-main flex items-center gap-1">
-                              <Battery size={11} className="text-emerald-500" />
-                              แบตเตอรี่ E_residual (α = 0.5)
-                            </span>
-                            <span className="text-[9px] text-text-muted font-mono">{selectedNodeObj.battery}% ➔ ค่าส่วนแบ่ง: {formulaDetails.eResidual.toFixed(2)}</span>
-                          </div>
-                          <span className="text-xs font-mono font-bold text-text-main">
-                            +{formulaDetails.batteryWeight.toFixed(3)}
+                  return (
+                    <tr 
+                      key={node.nodeId} 
+                      onClick={() => setSelectedNodeId(node.nodeId)}
+                      className={`hover:bg-bg-surface-elevated/40 cursor-pointer transition-colors ${selectedNodeId === node.nodeId ? 'bg-bg-surface-elevated/65' : ''}`}
+                    >
+                      <td className="py-4 font-bold text-text-main pl-1 text-sm">{node.nodeId}</td>
+                      <td className="py-4 text-sm text-text-main font-bold">
+                        {isOffline ? (
+                          <span className="text-text-muted font-normal">อุปกรณ์ปิดการทำงาน</span>
+                        ) : (
+                          <span className="flex items-center gap-1">
+                            {getPathString(node.nodeId)}
                           </span>
-                        </div>
-
-                        {/* RSSI */}
-                        <div className={`p-2.5 border rounded-xl flex items-center justify-between transition-all ${formulaDetails.dominant === 'rssi' ? 'border-blue-500/40 bg-blue-500/5 shadow-sm' : 'border-border-main bg-bg-surface-elevated/20'}`}>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-[10px] font-bold text-text-main flex items-center gap-1">
-                              <Signal size={11} className="text-blue-500" />
-                              สัญญาณ RSSI_reliability (β = 0.3)
-                            </span>
-                            <span className="text-[9px] text-text-muted font-mono">{formulaDetails.rssiVal} dBm ➔ ค่าส่วนแบ่ง: {formulaDetails.rssiReliability.toFixed(2)}</span>
-                          </div>
-                          <span className="text-xs font-mono font-bold text-text-main">
-                            +{formulaDetails.rssiWeight.toFixed(3)}
-                          </span>
-                        </div>
-
-                        {/* Distance */}
-                        <div className={`p-2.5 border rounded-xl flex items-center justify-between transition-all ${formulaDetails.dominant === 'distance' ? 'border-purple-500/40 bg-purple-500/5 shadow-sm' : 'border-border-main bg-bg-surface-elevated/20'}`}>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-[10px] font-bold text-text-main flex items-center gap-1">
-                              <MapPin size={11} className="text-purple-500" />
-                              ความใกล้ชิด D_proximity (γ = 0.2)
-                            </span>
-                            <span className="text-[9px] text-text-muted font-mono">ระยะทางภูมิศาสตร์ ➔ ค่าส่วนแบ่ง: {formulaDetails.proximity.toFixed(2)}</span>
-                          </div>
-                          <span className="text-xs font-mono font-bold text-text-main">
-                            +{formulaDetails.proximityWeight.toFixed(3)}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Sum Result */}
-                      <div className="border-t border-border-main pt-3 flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-text-sub">ค่าน้ำหนักสุทธิที่คำนวณได้ (W_total)</span>
-                        <span className="text-sm font-mono font-extrabold text-primary-500">
-                          {formulaDetails.total.toFixed(4)}
+                        )}
+                      </td>
+                      <td className="py-4 font-bold text-text-main text-sm">{isOffline ? '—' : nextHop}</td>
+                      <td className="py-4 text-center text-primary-600 dark:text-primary-400 font-extrabold text-sm">{isOffline ? '0.0000' : weightVal}</td>
+                      <td className="py-4 text-right pr-1">
+                        <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase ${statusClass}`}>
+                          {statusLabel}
                         </span>
-                      </div>
-
-                      {/* Dominant factor tag */}
-                      <div className="p-2.5 bg-primary-500/10 border border-primary-500/20 rounded-xl flex items-center gap-2">
-                        <span className="text-[8px] bg-primary-500 text-white font-extrabold px-1.5 py-0.5 rounded uppercase">
-                          ปัจจัยหลัก
-                        </span>
-                        <span className="text-[10px] text-text-main font-semibold leading-none">
-                          ถูกควบคุมหลักโดย: <span className="font-bold text-primary-600 dark:text-primary-400">{formulaDetails.dominantLabel}</span>
-                        </span>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              {/* Neighbors list / discovery table */}
-              <div className="glass-panel rounded-3xl p-5 bg-bg-surface border-border-main flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Signal className="text-primary-500" size={16} />
-                      <h4 className="text-xs font-bold text-text-main uppercase tracking-wider">
-                        ตารางการค้นพบโหนดเพื่อนบ้าน (Neighbor Table)
-                      </h4>
-                    </div>
-                    <span className="text-[9px] font-mono text-text-muted">
-                      จำนวนที่พบ: {neighborsDetails.length} โหนด
-                    </span>
-                  </div>
-
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-[10px] text-left font-mono">
-                      <thead>
-                        <tr className="border-b border-border-main text-text-muted font-bold">
-                          <th className="pb-2">ID เพื่อนบ้าน</th>
-                          <th className="pb-2">RSSI/LQI</th>
-                          <th className="pb-2">ระยะทาง (ม.)</th>
-                          <th className="pb-2">น้ำหนักโหนด</th>
-                          <th className="pb-2 text-right">สถานะ</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border-main/40 text-text-sub font-semibold">
-                        {neighborsDetails.map((nb) => {
-                          let badgeClass = 'text-text-muted bg-bg-surface-elevated border border-border-main';
-                          let badgeText = 'ผู้สมัคร';
-
-                          if (nb.status === 'offline') {
-                            badgeText = 'ออฟไลน์';
-                            badgeClass = 'text-red-500 bg-red-500/10 border border-red-500/20';
-                          } else if (nb.status === 'nexthop') {
-                            badgeText = 'Next Hop';
-                            badgeClass = 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 border border-emerald-500/30';
-                          }
-
-                          return (
-                            <tr key={nb.id} className="hover:bg-bg-surface-elevated/20">
-                              <td className="py-2.5 text-text-main font-bold">{nb.id}</td>
-                              <td className="py-2.5">
-                                {nb.status === 'offline' ? '—' : `${nb.rssi}dBm / ${nb.lqi}`}
-                              </td>
-                              <td className="py-2.5">{nb.status === 'offline' ? '—' : `${nb.distance} ม.`}</td>
-                              <td className="py-2.5 text-primary-500 font-bold">{nb.status === 'offline' ? '0.00' : nb.weight.toFixed(3)}</td>
-                              <td className="py-2.5 text-right">
-                                <span className={`text-[8px] px-1.5 py-0.5 rounded font-extrabold uppercase ${badgeClass}`}>
-                                  {badgeText}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          ) : (
-            <div className="glass-panel rounded-3xl p-8 bg-bg-surface border-border-main flex items-center justify-center gap-2.5 text-xs text-text-muted font-semibold animate-pulse">
-              <Info size={16} />
-              <span>คลิกเลือกโหนดเซนเซอร์บนแผนผังด้านบน เพื่อเรียกดูตารางเพื่อนบ้านและสูตรคำนวณถ่วงน้ำหนักโดยละเอียด</span>
-            </div>
-          )}
-
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* Right Column: Explanations Decision Log (lg:col-span-1) */}
-        <div className="glass-panel rounded-3xl p-6 bg-bg-surface border-border-main shadow-sm flex flex-col justify-between min-h-[350px]">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Terminal className="text-primary-500" size={16} />
-                <h3 className="text-xs font-bold text-text-main uppercase tracking-wider">
-                  บันทึกการตัดสินใจหาเส้นทาง
-                </h3>
-              </div>
-              <span className="flex h-1.5 w-1.5 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-              </span>
-            </div>
-            <p className="text-[10px] text-text-sub font-medium">คำอธิบายเหตุผลเบื้องหลังการตัดสินใจสลับเส้นทางสด</p>
-          </div>
+        {/* ROW 2: Two Columns Grid for formulas/neighbors (left) and live explanations (right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Selected Node Details: Formula & Neighbors (lg:col-span-2) */}
+          <div className="lg:col-span-2 space-y-6">
+            {selectedNodeObj ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+                
+                {/* Weight calculation step-by-step formula */}
+                <div className="glass-panel rounded-3xl p-6 bg-bg-surface border-border-main flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="text-primary-500" size={18} />
+                        <h4 className="text-xs font-bold text-text-main uppercase tracking-wider">
+                          สูตรถ่วงน้ำหนัก Mycelium (Weight Formula Details)
+                        </h4>
+                      </div>
+                    </div>
 
-          {/* Logs Feed Container with Auto-Scroll */}
-          <div 
-            ref={logContainerRef}
-            className="flex-1 overflow-y-auto max-h-[340px] pr-2 space-y-3 font-mono text-[10px] border-t border-border-main/50 pt-4"
-          >
-            {logs.map((log) => {
-              let textClass = 'text-text-sub';
-              let badgeColor = 'text-text-muted';
+                    {selectedNodeObj.nodeId === 'node-01' ? (
+                      <div className="flex items-center gap-2 p-5 bg-bg-surface-elevated/30 border border-border-main rounded-2xl my-auto text-sm text-text-sub">
+                        <Info size={16} className="text-primary-500" />
+                        <span>โหนดเกตเวย์กลาง (Gateway node) ทำหน้าที่รับข้อมูลโดยตรง ไม่จำเป็นต้องคำนวณสูตรหาเส้นทางส่งต่อ</span>
+                      </div>
+                    ) : formulaDetails ? (
+                      <div className="space-y-4">
+                        {/* Formula display */}
+                        <div className="bg-bg-surface-elevated/50 border border-border-main p-4 rounded-2xl text-center">
+                          <span className="text-xs text-text-muted font-mono block mb-1">สมการถ่วงน้ำหนักรวม</span>
+                          <div className="text-sm font-mono font-extrabold text-primary-600 dark:text-primary-400">
+                            W = (0.5 × E) + (0.3 × R) + (0.2 × D)
+                          </div>
+                        </div>
 
-              if (log.type === 'success') {
-                textClass = 'text-emerald-600 dark:text-emerald-400 font-semibold';
-                badgeColor = 'text-emerald-500';
-              } else if (log.type === 'warning') {
-                textClass = 'text-amber-600 dark:text-amber-500 font-semibold';
-                badgeColor = 'text-amber-500';
-              } else if (log.type === 'danger') {
-                textClass = 'text-red-500 font-semibold';
-                badgeColor = 'text-red-500';
-              }
+                        {/* Calculations breakdown */}
+                        <div className="space-y-2.5">
+                          {/* Battery */}
+                          <div className={`p-3.5 border rounded-2xl flex items-center justify-between transition-all ${formulaDetails.dominant === 'battery' ? 'border-emerald-500/40 bg-emerald-500/5 shadow-sm' : 'border-border-main bg-bg-surface-elevated/20'}`}>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-xs font-bold text-text-main flex items-center gap-1">
+                                <Battery size={13} className="text-emerald-500" />
+                                แบตเตอรี่ E_residual (α = 0.5)
+                              </span>
+                              <span className="text-[11px] text-text-muted font-mono font-semibold">{selectedNodeObj.battery}% ➔ ค่าส่วนแบ่ง: {formulaDetails.eResidual.toFixed(2)}</span>
+                            </div>
+                            <span className="text-sm font-mono font-bold text-text-main">
+                              +{formulaDetails.batteryWeight.toFixed(3)}
+                            </span>
+                          </div>
 
-              return (
-                <div key={log.id} className="p-2 bg-bg-surface-elevated/40 border border-border-main/40 rounded-xl flex items-start gap-2 leading-relaxed animate-fade-in">
-                  <span className={`font-bold select-none shrink-0 ${badgeColor}`}>[{log.time}]</span>
-                  <span className={textClass}>{log.message}</span>
+                          {/* RSSI */}
+                          <div className={`p-3.5 border rounded-2xl flex items-center justify-between transition-all ${formulaDetails.dominant === 'rssi' ? 'border-blue-500/40 bg-blue-500/5 shadow-sm' : 'border-border-main bg-bg-surface-elevated/20'}`}>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-xs font-bold text-text-main flex items-center gap-1">
+                                <Signal size={13} className="text-blue-500" />
+                                สัญญาณ RSSI_reliability (β = 0.3)
+                              </span>
+                              <span className="text-[11px] text-text-muted font-mono font-semibold">{formulaDetails.rssiVal} dBm ➔ ค่าส่วนแบ่ง: {formulaDetails.rssiReliability.toFixed(2)}</span>
+                            </div>
+                            <span className="text-sm font-mono font-bold text-text-main">
+                              +{formulaDetails.rssiWeight.toFixed(3)}
+                            </span>
+                          </div>
+
+                          {/* Distance */}
+                          <div className={`p-3.5 border rounded-2xl flex items-center justify-between transition-all ${formulaDetails.dominant === 'distance' ? 'border-purple-500/40 bg-purple-500/5 shadow-sm' : 'border-border-main bg-bg-surface-elevated/20'}`}>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-xs font-bold text-text-main flex items-center gap-1">
+                                <MapPin size={13} className="text-purple-500" />
+                                ความใกล้ชิด D_proximity (γ = 0.2)
+                              </span>
+                              <span className="text-[11px] text-text-muted font-mono font-semibold">ระยะทางภูมิศาสตร์ ➔ ค่าส่วนแบ่ง: {formulaDetails.proximity.toFixed(2)}</span>
+                            </div>
+                            <span className="text-sm font-mono font-bold text-text-main">
+                              +{formulaDetails.proximityWeight.toFixed(3)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Sum Result */}
+                        <div className="border-t border-border-main pt-4 flex justify-between items-center">
+                          <span className="text-xs font-bold text-text-sub">ค่าน้ำหนักสุทธิที่คำนวณได้ (W_total)</span>
+                          <span className="text-base font-mono font-extrabold text-primary-500">
+                            {formulaDetails.total.toFixed(4)}
+                          </span>
+                        </div>
+
+                        {/* Dominant factor tag */}
+                        <div className="p-3 bg-primary-500/10 border border-primary-500/20 rounded-xl flex items-center gap-2">
+                          <span className="text-[10px] bg-primary-500 text-white font-extrabold px-2 py-0.5 rounded uppercase leading-none">
+                            ปัจจัยหลัก
+                          </span>
+                          <span className="text-xs text-text-main font-semibold leading-none">
+                            ถูกควบคุมหลักโดย: <span className="font-bold text-primary-600 dark:text-primary-400">{formulaDetails.dominantLabel}</span>
+                          </span>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              );
-            })}
+
+                {/* Neighbors list / discovery table */}
+                <div className="glass-panel rounded-3xl p-6 bg-bg-surface border-border-main flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="flex items-center gap-2">
+                        <Signal className="text-primary-500" size={18} />
+                        <h4 className="text-xs font-bold text-text-main uppercase tracking-wider">
+                          ตารางโหนดเพื่อนบ้าน (Neighbor Table)
+                        </h4>
+                      </div>
+                      <span className="text-xs font-mono text-text-muted">
+                        ค้นพบ: {neighborsDetails.length} โหนด
+                      </span>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-left font-mono">
+                        <thead>
+                          <tr className="border-b border-border-main text-text-muted font-bold">
+                            <th className="pb-2.5">ID เพื่อนบ้าน</th>
+                            <th className="pb-2.5">RSSI/LQI</th>
+                            <th className="pb-2.5">ระยะทาง (ม.)</th>
+                            <th className="pb-2.5">น้ำหนักโหนด</th>
+                            <th className="pb-2.5 text-right">สถานะ</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border-main/40 text-text-sub font-bold">
+                          {neighborsDetails.map((nb) => {
+                            let badgeClass = 'text-text-muted bg-bg-surface-elevated border border-border-main';
+                            let badgeText = 'ผู้สมัคร';
+
+                            if (nb.status === 'offline') {
+                              badgeText = 'ออฟไลน์';
+                              badgeClass = 'text-red-500 bg-red-500/10 border border-red-500/20';
+                            } else if (nb.status === 'nexthop') {
+                              badgeText = 'Next Hop';
+                              badgeClass = 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 border border-emerald-500/30';
+                            }
+
+                            return (
+                              <tr key={nb.id} className="hover:bg-bg-surface-elevated/20">
+                                <td className="py-3 text-text-main font-bold text-sm">{nb.id}</td>
+                                <td className="py-3 text-sm">
+                                  {nb.status === 'offline' ? '—' : `${nb.rssi}dBm / ${nb.lqi}`}
+                                </td>
+                                <td className="py-3 text-sm">{nb.status === 'offline' ? '—' : `${nb.distance} ม.`}</td>
+                                <td className="py-3 text-primary-500 font-extrabold text-sm">{nb.status === 'offline' ? '0.00' : nb.weight.toFixed(3)}</td>
+                                <td className="py-3 text-right">
+                                  <span className={`text-[10px] px-2 py-0.5 rounded font-extrabold uppercase ${badgeClass}`}>
+                                    {badgeText}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            ) : (
+              <div className="glass-panel rounded-3xl p-8 bg-bg-surface border-border-main flex items-center justify-center gap-3 text-sm text-text-muted font-bold animate-pulse min-h-[300px]">
+                <Info size={18} />
+                <span>คลิกเลือกโหนดเซนเซอร์บนแผนผังด้านบน เพื่อเรียกดูตารางเพื่อนบ้านและสูตรคำนวณถ่วงน้ำหนักโดยละเอียด</span>
+              </div>
+            )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-border-main/50 flex items-center gap-2 text-[9px] text-text-muted font-medium">
-            <Info size={11} className="text-text-muted" />
-            <span>โหนดจะสลับเส้นทางวิทยุโดยอัตโนมัติหากพบแบตเตอรี่ลดต่ำหรือสัญญาณวิทยุดรอป</span>
+          {/* Right Column: Explanations Decision Log (col-span-1) */}
+          <div className="glass-panel rounded-3xl p-6 bg-bg-surface border-border-main shadow-sm flex flex-col justify-between min-h-[380px]">
+            <div className="flex flex-col gap-1 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Terminal className="text-primary-500" size={18} />
+                  <h3 className="text-xs font-bold text-text-main uppercase tracking-wider">
+                    บันทึกการตัดสินใจหาเส้นทาง
+                  </h3>
+                </div>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+              </div>
+              <p className="text-xs text-text-sub font-semibold">คำอธิบายเหตุผลเบื้องหลังการตัดสินใจสลับเส้นทางสด</p>
+            </div>
+
+            {/* Logs Feed Container with Auto-Scroll */}
+            <div 
+              ref={logContainerRef}
+              className="flex-1 overflow-y-auto max-h-[350px] pr-2 space-y-3.5 font-mono text-xs border-t border-border-main/50 pt-5"
+            >
+              {logs.map((log) => {
+                let textClass = 'text-text-sub';
+                let badgeColor = 'text-text-muted';
+
+                if (log.type === 'success') {
+                  textClass = 'text-emerald-600 dark:text-emerald-400 font-bold';
+                  badgeColor = 'text-emerald-500';
+                } else if (log.type === 'warning') {
+                  textClass = 'text-amber-600 dark:text-amber-500 font-bold';
+                  badgeColor = 'text-amber-500';
+                } else if (log.type === 'danger') {
+                  textClass = 'text-red-500 font-bold';
+                  badgeColor = 'text-red-500';
+                }
+
+                return (
+                  <div key={log.id} className="p-3 bg-bg-surface-elevated/40 border border-border-main/40 rounded-xl flex items-start gap-2.5 leading-relaxed animate-fade-in">
+                    <span className={`font-bold select-none shrink-0 ${badgeColor}`}>[{log.time}]</span>
+                    <span className={textClass}>{log.message}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-border-main/50 flex items-center gap-2 text-xs text-text-muted font-bold">
+              <Info size={14} className="text-text-muted" />
+              <span>โหนดจะสลับเส้นทางวิทยุโดยอัตโนมัติหากพบแบตเตอรี่ลดต่ำหรือสัญญาณวิทยุดรอป</span>
+            </div>
           </div>
+
         </div>
 
       </div>
