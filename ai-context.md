@@ -117,9 +117,9 @@ This document tracks the implementation progress of the server-side admin dashbo
 
 ## 🍄 Phase 7: Mycelium Routing Demonstration Overhaul Status
 
-- [x] Reusable SVG Defs Integration (Clean arrowhead markers for flow direction, SVG Gaussian blur glow filter)
+- [x] Reusable SVG Defs Integration (Corrected arrowhead markers for data flow direction pointing towards Gateway, SVG Gaussian blur glow filter)
 - [x] Gateway Node-01 Dedicated Visual Styling (Pulsing concentric wave transmitter rings, distinct radio tower SVG structure)
-- [x] Dynamic Packet Flow Animation (Glowing Emerald particles travelling asynchronously towards the Gateway next hop)
+- [x] Dynamic Packet Flow Animation (Glowing Emerald particles travelling asynchronously towards the Gateway next hop, following uplink direction)
 - [x] Clean Grid Visualization (Removed satellite forest background image for high-contrast topology clarity)
 - [x] Real-time Mycelium Routing Table View (Destination node, primary path, next hop, weight score, and dynamic self-healing status)
 - [x] Interactive Neighbor Discovery & Formula Weight Breakdown (Neighbor RSSI, LQI, distance, and candidate node weights; step-by-step breakdown of $W_{total} = (0.5 \times E_{residual}) + (0.3 \times RSSI_{reliability}) + (0.2 \times D_{proximity})$ with dominant factor highlighting)
