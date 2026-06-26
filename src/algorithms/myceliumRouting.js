@@ -138,7 +138,7 @@ function calculateDynamicRoutes(nodes) {
     }
     // Check if path actually reaches the gateway node-01
     if (path[path.length - 1] === 'node-01') {
-      routes[node.nodeId] = path.reverse();
+      routes[node.nodeId] = path;
     } else {
       routes[node.nodeId] = []; // Disconnected
     }
