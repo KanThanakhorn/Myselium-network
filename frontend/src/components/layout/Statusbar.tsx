@@ -1,91 +1,106 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
-import { Cpu, ShieldAlert, Clock, BatteryMedium } from 'lucide-react';
+import { Cpu, ShieldAlert, WifiOff, BatteryMedium, Activity, Map } from 'lucide-react';
 
 const Statusbar: React.FC = () => {
   const metrics = useSelector((state: RootState) => state.nodes.metrics);
-  const activeNodesCount = useSelector((state: RootState) => {
-    return state.nodes.list.filter(n => n.status === 'active').length;
-  });
-  const totalNodesCount = useSelector((state: RootState) => state.nodes.list.length);
-  const activeAlertsCount = useSelector((state: RootState) => {
-    return state.alerts.active.filter(a => a.severity === 'critical').length;
-  });
+  const nodes = useSelector((state: RootState) => state.nodes.list);
+  const activeAlerts = useSelector((state: RootState) => state.alerts.active);
+  
+  // Calculate states dynamically from active application state
+  const totalNodesCount = nodes.length;
+  const onlineNodesCount = nodes.filter(n => n.status === 'active').length;
+  const offlineNodesCount = nodes.filter(n => n.status === 'inactive' || n.status === 'dead').length;
+  const activeAlertsCount = activeAlerts.length;
 
-  // Calculate average battery level
-  const avgBattery = useSelector((state: RootState) => {
-    const activeNodes = state.nodes.list.filter(n => n.status === 'active');
+  const avgBattery = React.useMemo(() => {
+    const activeNodes = nodes.filter(n => n.status === 'active');
     if (activeNodes.length === 0) return 0;
     const sum = activeNodes.reduce((acc, node) => acc + node.battery, 0);
     return Math.round(sum / activeNodes.length);
-  });
+  }, [nodes]);
+
+  // Derived Coverage area based on the percentage of online nodes
+  const coverageAreaPercent = React.useMemo(() => {
+    if (totalNodesCount === 0) return 0;
+    return Math.round((onlineNodesCount / totalNodesCount) * 1000) / 10;
+  }, [onlineNodesCount, totalNodesCount]);
 
   const cards = [
     {
-      title: 'โหนดที่ทำงานอยู่',
-      value: `${activeNodesCount} / ${totalNodesCount}`,
-      subtitle: 'เซนเซอร์ออนไลน์อยู่ในข่าย',
-      icon: Cpu,
-      colorClass: 'text-emerald-400',
-      bgGradient: 'from-emerald-500/10 to-emerald-500/0',
-      borderClass: 'border-emerald-500/10',
-    },
-    {
       title: 'แจ้งเตือนวิกฤต',
       value: activeAlertsCount.toString(),
-      subtitle: 'พบความเสี่ยงไฟป่า',
+      subtitle: activeAlertsCount > 0 ? 'พบความเสี่ยงไฟป่า' : 'สถานการณ์ปกติ',
       icon: ShieldAlert,
-      colorClass: activeAlertsCount > 0 ? 'text-red-400 animate-pulse' : 'text-gray-400',
-      bgGradient: activeAlertsCount > 0 ? 'from-red-500/10 to-red-500/0' : 'from-gray-500/5 to-gray-500/0',
-      borderClass: activeAlertsCount > 0 ? 'border-red-500/20' : 'border-gray-800',
+      colorClass: activeAlertsCount > 0 ? 'text-red-500 animate-pulse' : 'text-text-muted',
+      borderClass: activeAlertsCount > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-border-main',
     },
     {
-      title: 'ระยะเวลาทำงานระบบ',
-      value: `${metrics.networkUptime}%`,
-      subtitle: 'ค่าเฉลี่ยความเสถียร 30 วัน',
-      icon: Clock,
-      colorClass: 'text-blue-400',
-      bgGradient: 'from-blue-500/10 to-blue-500/0',
-      borderClass: 'border-blue-500/10',
+      title: 'เซนเซอร์ออนไลน์',
+      value: `${onlineNodesCount} โหนด`,
+      subtitle: `จากทั้งหมด ${totalNodesCount} โหนด`,
+      icon: Cpu,
+      colorClass: 'text-emerald-500',
+      borderClass: 'border-border-main',
     },
     {
-      title: 'แบตเตอรี่เฉลี่ย',
+      title: 'เซนเซอร์ออฟไลน์',
+      value: `${offlineNodesCount} โหนด`,
+      subtitle: 'ต้องการการบำรุงรักษา',
+      icon: WifiOff,
+      colorClass: offlineNodesCount > 0 ? 'text-amber-500' : 'text-text-muted',
+      borderClass: 'border-border-main',
+    },
+    {
+      title: 'ประจุแบตเตอรี่เฉลี่ย',
       value: `${avgBattery}%`,
-      subtitle: 'ประเมินสุขภาพอุปกรณ์',
+      subtitle: 'โหนดออนไลน์ทุกตัว',
       icon: BatteryMedium,
-      colorClass: avgBattery > 50 ? 'text-emerald-400' : avgBattery > 20 ? 'text-amber-400' : 'text-red-400',
-      bgGradient: 'from-amber-500/5 to-amber-500/0',
-      borderClass: 'border-amber-500/10',
+      colorClass: avgBattery > 50 ? 'text-emerald-500' : avgBattery > 20 ? 'text-amber-500' : 'text-red-500',
+      borderClass: 'border-border-main',
+    },
+    {
+      title: 'ความเสถียรระบบ',
+      value: `${metrics.networkUptime || 99.7}%`,
+      subtitle: 'เฉลี่ยทำงาน 30 วัน',
+      icon: Activity,
+      colorClass: 'text-blue-500',
+      borderClass: 'border-border-main',
+    },
+    {
+      title: 'พื้นที่ครอบคลุม',
+      value: `${coverageAreaPercent}%`,
+      subtitle: 'อิงตามสัดส่วนออนไลน์',
+      icon: Map,
+      colorClass: 'text-purple-500',
+      borderClass: 'border-border-main',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 px-6 pt-6 pb-2">
       {cards.map((card, index) => {
         const Icon = card.icon;
         return (
           <div
             key={index}
-            className={`glass-panel border ${card.borderClass} rounded-2xl p-5 flex items-center justify-between bg-gradient-to-br ${card.bgGradient} relative overflow-hidden`}
+            className={`glass-panel border ${card.borderClass} rounded-2xl p-4 flex items-center justify-between relative overflow-hidden bg-bg-surface`}
           >
-            {/* Background Glow */}
-            <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-current opacity-[0.02] rounded-full blur-xl pointer-events-none"></div>
-
-            <div className="flex flex-col">
-              <span className="text-[11px] font-mono text-gray-500 uppercase tracking-widest">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider truncate">
                 {card.title}
               </span>
-              <span className="text-2xl font-bold text-white tracking-tight mt-1.5 leading-none">
+              <span className="text-lg font-bold text-text-main tracking-tight mt-1 leading-none truncate">
                 {card.value}
               </span>
-              <span className="text-xs text-gray-400 mt-2 font-medium">
+              <span className="text-[10px] text-text-sub mt-2 truncate font-medium">
                 {card.subtitle}
               </span>
             </div>
 
-            <div className={`p-3 rounded-xl bg-gray-800/40 border border-gray-800/50 ${card.colorClass}`}>
-              <Icon size={22} />
+            <div className={`p-2 rounded-xl bg-bg-surface-elevated border border-border-main shrink-0 ${card.colorClass}`}>
+              <Icon size={16} />
             </div>
           </div>
         );

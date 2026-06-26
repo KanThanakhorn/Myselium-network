@@ -31,38 +31,39 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside 
-      className={`glass-panel border-r border-gray-800 transition-all duration-300 ease-in-out flex flex-col ${
+      className={`glass-panel border-r border-border-main transition-all duration-300 ease-in-out flex flex-col ${
         sidebarOpen ? 'w-64' : 'w-20'
-      } h-screen sticky top-0`}
+      } h-screen sticky top-0 z-40 bg-bg-surface`}
     >
       {/* Sidebar Header Brand */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-800 h-16">
+      <div className="flex items-center justify-between p-4 border-b border-border-main h-16 bg-bg-surface/50">
         {sidebarOpen ? (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-              <ShieldAlert className="w-5 h-5 text-dark-950 font-bold" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-500/10">
+              <ShieldAlert className="w-5 h-5 text-white font-bold" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-white tracking-wider leading-none">MYCELIUM</span>
-              <span className="text-[10px] text-emerald-400 font-semibold uppercase tracking-widest mt-0.5">Forest Guard</span>
+              <span className="font-bold text-text-main text-xs tracking-wider leading-none uppercase">Mycelium</span>
+              <span className="text-[9px] text-primary-600 dark:text-primary-500 font-bold uppercase tracking-widest mt-0.5">Forest Guard</span>
             </div>
           </div>
         ) : (
-          <div className="mx-auto w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-            <ShieldAlert className="w-5 h-5 text-dark-950" />
+          <div className="mx-auto w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-500/10">
+            <ShieldAlert className="w-5 h-5 text-white" />
           </div>
         )}
 
         <button 
           onClick={() => dispatch(toggleSidebar())}
-          className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-gray-800/50 transition-colors"
+          className="text-text-muted hover:text-text-main p-1.5 rounded-lg hover:bg-bg-surface-elevated transition-colors border border-transparent focus:outline-none"
+          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
-          {sidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </button>
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -71,28 +72,28 @@ const Sidebar: React.FC = () => {
             <button
               key={item.id}
               onClick={() => dispatch(setActiveTab(item.id))}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group relative ${
+              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group relative border focus:outline-none ${
                 isActive 
-                  ? 'bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 border border-emerald-500/20 text-white font-medium shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]' 
-                  : 'text-gray-400 hover:text-gray-100 hover:bg-gray-800/30 border border-transparent'
+                  ? 'bg-primary-500/10 border-primary-500/20 text-primary-600 dark:text-primary-500 font-semibold shadow-[0_1px_2px_rgba(16,185,129,0.05)]' 
+                  : 'text-text-sub hover:text-text-main hover:bg-bg-surface-elevated border-transparent'
               }`}
             >
               <Icon 
                 className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${
-                  isActive ? 'text-emerald-400' : 'text-gray-400 group-hover:text-gray-200'
+                  isActive ? 'text-primary-500' : 'text-text-muted group-hover:text-text-sub'
                 }`} 
               />
               
               {sidebarOpen && (
-                <span className="text-sm tracking-wide flex-1 text-left">{item.label}</span>
+                <span className="text-xs font-medium tracking-wide flex-1 text-left">{item.label}</span>
               )}
 
               {/* Badge for Alerts */}
               {item.badge !== undefined && (
-                <span className={`flex items-center justify-center min-w-5 h-5 px-1 text-[10px] font-bold rounded-full ${
+                <span className={`flex items-center justify-center min-w-5 h-5 px-1.5 text-[9px] font-bold rounded-full ${
                   item.id === 'alerts' 
                     ? 'bg-red-500 text-white animate-pulse' 
-                    : 'bg-emerald-500 text-dark-950'
+                    : 'bg-primary-500 text-white'
                 } ${!sidebarOpen && 'absolute top-1 right-1'}`}>
                   {item.badge}
                 </span>
@@ -100,7 +101,7 @@ const Sidebar: React.FC = () => {
 
               {/* Tooltip when collapsed */}
               {!sidebarOpen && (
-                <div className="absolute left-full ml-4 px-2 py-1 bg-gray-950 text-white text-xs font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 shadow-md whitespace-nowrap z-50">
+                <div className="absolute left-full ml-4 px-2.5 py-1 bg-gray-900 dark:bg-bg-surface-elevated text-white text-[10px] font-medium rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 shadow-md whitespace-nowrap z-50 border border-border-main">
                   {item.label}
                 </div>
               )}
@@ -110,13 +111,13 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* Footer System Status */}
-      <div className="p-4 border-t border-gray-800 text-center">
+      <div className="p-4 border-t border-border-main text-center bg-bg-surface/50">
         {sidebarOpen ? (
-          <div className="text-[11px] text-gray-500 font-mono">
+          <div className="text-[10px] text-text-muted font-mono">
             v1.0.0-Beta
           </div>
         ) : (
-          <div className="text-[10px] text-gray-500 font-mono">v1.0</div>
+          <div className="text-[9px] text-text-muted font-mono">v1.0</div>
         )}
       </div>
     </aside>

@@ -36,34 +36,34 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
   const tabTitle = getTabTitle(activeTab);
 
   return (
-    <header className="glass-panel border-b border-gray-800 h-16 flex items-center justify-between px-6 sticky top-0 z-30 w-full">
+    <header className="glass-panel border-b border-border-main h-16 flex items-center justify-between px-6 sticky top-0 z-30 w-full bg-bg-surface/90">
       {/* Current Page Title */}
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-bold text-white tracking-wide m-0">{tabTitle}</h1>
-        <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full font-mono font-medium">
+        <h1 className="text-base font-bold text-text-main tracking-tight m-0">{tabTitle}</h1>
+        <span className="text-[9px] bg-bg-surface-elevated text-text-sub px-2.5 py-0.5 rounded-full font-mono font-medium border border-border-main">
           ระบบ / {tabTitle}
         </span>
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-4">
         {/* Network Status Indicator */}
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-800/40 border border-gray-800 text-xs">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-bg-surface-elevated/80 border border-border-main text-xs">
           {socketConnected ? (
             <>
               <div className="relative flex h-2 w-2">
                 <span className="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </div>
-              <span className="text-emerald-400 font-mono font-medium text-[11px] flex items-center gap-1">
-                <Wifi size={12} /> สัญญาณสดออนไลน์
+              <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold text-[10px] flex items-center gap-1">
+                <Wifi size={11} /> สัญญาณสดออนไลน์
               </span>
             </>
           ) : (
             <>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-              <span className="text-red-400 font-mono font-medium text-[11px] flex items-center gap-1">
-                <WifiOff size={12} /> ข้อมูลออฟไลน์
+              <span className="text-red-500 dark:text-red-400 font-mono font-bold text-[10px] flex items-center gap-1">
+                <WifiOff size={11} /> ข้อมูลออฟไลน์
               </span>
             </>
           )}
@@ -72,32 +72,34 @@ const Header: React.FC<HeaderProps> = ({ socketConnected }) => {
         {/* Theme Switcher */}
         <button
           onClick={() => dispatch(setDarkMode(!darkMode))}
-          className="text-gray-400 hover:text-white p-2 rounded-xl bg-gray-800/30 hover:bg-gray-800/60 border border-gray-800/50 transition-colors"
+          className="text-text-sub hover:text-text-main p-2 rounded-xl bg-bg-surface-elevated hover:bg-bg-surface-elevated/80 border border-border-main transition-colors focus:outline-none"
           title={darkMode ? "เปลี่ยนเป็นโหมดสว่าง" : "เปลี่ยนเป็นโหมดมืด"}
+          aria-label="Toggle dark mode"
         >
-          {darkMode ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} />}
+          {darkMode ? <Sun size={16} className="text-amber-500" /> : <Moon size={16} className="text-indigo-500" />}
         </button>
 
         {/* User Info & Profile */}
         {currentUser && (
-          <div className="flex items-center gap-3 border-l border-gray-800 pl-5">
+          <div className="flex items-center gap-3 border-l border-border-main pl-4">
             <div className="flex flex-col text-right">
-              <span className="text-xs font-semibold text-white leading-none">{currentUser.name || currentUser.email}</span>
-              <span className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider mt-0.5">
+              <span className="text-xs font-semibold text-text-main leading-none">{currentUser.name || currentUser.email}</span>
+              <span className="text-[9px] text-primary-600 dark:text-primary-500 font-bold font-mono uppercase tracking-wider mt-0.5">
                 {getRoleLabel(currentUser.role)}
               </span>
             </div>
             
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <UserIcon size={18} />
+            <div className="w-8 h-8 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-500 shadow-sm shadow-primary-500/5">
+              <UserIcon size={16} />
             </div>
 
             <button
               onClick={() => dispatch(logout())}
-              className="text-gray-500 hover:text-red-400 p-2 rounded-xl hover:bg-red-500/10 transition-colors ml-1"
+              className="text-text-muted hover:text-red-500 p-2 rounded-xl hover:bg-red-500/5 transition-colors border border-transparent focus:outline-none"
               title="ออกจากระบบ"
+              aria-label="Logout"
             >
-              <LogOut size={16} />
+              <LogOut size={15} />
             </button>
           </div>
         )}

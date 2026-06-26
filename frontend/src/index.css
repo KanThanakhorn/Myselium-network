@@ -2,16 +2,30 @@
 
 @import "tailwindcss";
 
-
 @theme {
   --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   
-  /* Premium Forest / Charcoal theme colors */
+  /* Semantic Design Tokens mapped to CSS variables */
+  --color-bg-app: var(--bg-app);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-elevated: var(--bg-surface-elevated);
+  --color-bg-surface-modal: var(--bg-surface-modal);
+  
+  --color-text-main: var(--text-primary);
+  --color-text-sub: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  
+  --color-border-main: var(--border-color);
+  --color-border-focus: var(--border-focus);
+  
+  --color-shadow-main: var(--shadow-color);
+  
+  /* Premium Forest / Branding accent colors */
   --color-primary-50: #f0fdf4;
   --color-primary-100: #dcfce7;
-  --color-primary-500: #22c55e;
-  --color-primary-600: #16a34a;
-  --color-primary-700: #15803d;
+  --color-primary-500: #10b981; /* Emerald-500 */
+  --color-primary-600: #059669; /* Emerald-600 */
+  --color-primary-700: #047857; /* Emerald-700 */
   
   --color-dark-800: #13151a;
   --color-dark-900: #0d0f12;
@@ -19,34 +33,63 @@
 }
 
 :root {
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Premium Light Theme (Notion / Vercel style) */
+  --bg-app: #f6f8fa;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f3f4f6;
+  --bg-surface-modal: #ffffff;
+  --border-color: #e1e4e8;
+  --border-focus: #10b981;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #8c95a0;
+  --shadow-color: rgba(0, 0, 0, 0.04);
+  
   font-family: var(--font-sans);
-  background-color: #0d0f12; /* Sleek Dark Theme by default */
-  color: #f3f4f6;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 18px; /* Scale up entire UI by ~12.5% */
+  font-size: 16px; /* Base size reset to 16px for professional proportions */
+}
+
+/* Dark Theme (Charcoal / Deep Slate style - avoiding pure black) */
+.dark {
+  --bg-app: #0a0b0d;
+  --bg-surface: rgba(20, 22, 28, 0.75);
+  --bg-surface-elevated: #16181f;
+  --bg-surface-modal: #111317;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-focus: #34d399;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #0d0f12;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Glassmorphism utility classes */
+/* Glassmorphism/Card utility classes adapted for both light and dark mode */
 .glass-panel {
-  background: rgba(19, 21, 26, 0.6);
+  background: var(--bg-surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px 0 var(--shadow-color), 0 1px 2px -1px var(--shadow-color);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.glass-panel-light {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+.glass-panel:hover {
+  box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
 }
 
 /* Custom Scrollbars */
@@ -56,16 +99,26 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(13, 15, 18, 0.5);
+  background: var(--bg-app);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  background: var(--border-color);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--text-muted);
+}
+
+/* Accessibility Focus Indicators */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
 }
 
 /* Micro-animations */

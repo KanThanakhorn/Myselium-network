@@ -79,25 +79,24 @@ const AlertToasts: React.FC = () => {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none">
       {notifications.map((toast) => {
-        let bgClass = 'bg-gray-900/90 border-gray-800';
-        let iconColor = 'text-blue-400';
+        let bgClass = 'bg-bg-surface text-text-main border-border-main shadow-lg';
+        let iconColor = 'text-blue-500';
         let Icon = Info;
 
         if (toast.type === 'error') {
-          bgClass = 'bg-red-950/90 border-red-500/30 text-red-100 shadow-[0_4px_20px_rgba(239,68,68,0.2)]';
-          iconColor = 'text-red-400';
+          bgClass = 'bg-red-50 dark:bg-red-950/90 text-red-900 dark:text-red-100 border-red-200 dark:border-red-500/20 shadow-lg shadow-red-100 dark:shadow-black/20';
+          iconColor = 'text-red-500';
           Icon = AlertOctagon;
         } else if (toast.type === 'warning') {
-          bgClass = 'bg-amber-950/90 border-amber-500/30 text-amber-100';
-          iconColor = 'text-amber-400';
+          bgClass = 'bg-amber-50 dark:bg-amber-950/90 text-amber-900 dark:text-amber-100 border-amber-200 dark:border-amber-500/20 shadow-lg shadow-amber-100 dark:shadow-black/20';
+          iconColor = 'text-amber-500';
           Icon = AlertTriangle;
         } else if (toast.type === 'success') {
-          bgClass = 'bg-emerald-950/90 border-emerald-500/30 text-emerald-100';
-          iconColor = 'text-emerald-400';
+          bgClass = 'bg-emerald-50 dark:bg-emerald-950/90 text-emerald-900 dark:text-emerald-100 border-emerald-200 dark:border-emerald-500/20 shadow-lg shadow-emerald-100 dark:shadow-black/20';
+          iconColor = 'text-emerald-500';
           Icon = CheckCircle;
         }
 
-        // Auto-dismiss after 8 seconds
         return (
           <ToastItem
             key={toast.id}
@@ -129,21 +128,22 @@ const ToastItem: React.FC<{
   }, [onClose]);
 
   return (
-    <div className={`p-4 rounded-2xl border backdrop-blur-xl ${bgClass} flex items-start gap-3 shadow-lg pointer-events-auto transition-all duration-300 transform translate-y-0 animate-in fade-in slide-in-from-bottom-4`}>
-      <div className={`mt-0.5 ${iconColor}`}>
-        <Icon size={18} />
+    <div className={`p-4 rounded-2xl border ${bgClass} flex items-start gap-3 pointer-events-auto transition-all duration-300 transform translate-y-0 animate-in fade-in slide-in-from-bottom-4`}>
+      <div className={`mt-0.5 shrink-0 ${iconColor}`}>
+        <Icon size={16} />
       </div>
       <div className="flex-1 flex flex-col gap-0.5">
-        <p className="text-xs font-semibold tracking-wide leading-tight">{toast.message}</p>
-        <span className="text-[10px] text-gray-400/70 font-mono mt-1">
+        <p className="text-xs font-bold tracking-wide leading-tight">{toast.message}</p>
+        <span className="text-[9px] text-text-muted font-mono mt-1">
           {new Date(toast.timestamp).toLocaleTimeString()}
         </span>
       </div>
       <button 
         onClick={onClose}
-        className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors"
+        className="text-text-muted hover:text-text-main p-1 rounded-lg hover:bg-bg-surface-elevated transition-colors focus:outline-none"
+        aria-label="Dismiss toast"
       >
-        <X size={14} />
+        <X size={12} />
       </button>
     </div>
   );
