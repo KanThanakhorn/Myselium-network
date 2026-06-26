@@ -342,6 +342,10 @@ export default function NetworkTopology() {
 
   // Action: Toggle Node Status
   const handleToggleStatus = async (node: SensorNode) => {
+    if (node.battery <= 0) {
+      dispatch(addNotification({ message: 'ไม่สามารถเปิดทำงานโหนดที่แบตเตอรี่หมดได้', type: 'error' }));
+      return;
+    }
     const nextStatus = node.status === 'active' ? 'inactive' : 'active';
     try {
       await dispatch(updateNodeStatusThunk({ nodeId: node.nodeId, status: nextStatus })).unwrap();
@@ -901,14 +905,17 @@ export default function NetworkTopology() {
                   </button>
 
                   <button
+                    disabled={selectedNodeObj.battery <= 0}
                     onClick={() => handleToggleStatus(selectedNodeObj)}
                     className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold text-white transition-colors focus:outline-none cursor-pointer ${selectedNodeObj.status === 'active'
                         ? 'bg-red-500 hover:bg-red-600'
                         : 'bg-emerald-500 hover:bg-emerald-600'
-                      }`}
+                      } disabled:opacity-40 disabled:cursor-not-allowed`}
                   >
                     <Power size={14} />
-                    {selectedNodeObj.status === 'active' ? 'ปิดทำงาน' : 'เปิดทำงาน'}
+                    {selectedNodeObj.battery <= 0 
+                      ? 'แบตเตอรี่หมด' 
+                      : (selectedNodeObj.status === 'active' ? 'ปิดทำงาน' : 'เปิดทำงาน')}
                   </button>
                 </div>
               ) : (

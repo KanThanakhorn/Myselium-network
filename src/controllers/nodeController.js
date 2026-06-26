@@ -225,6 +225,19 @@ exports.updateNodeStatus = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide a valid status' });
     }
 
+    // Block activating node if battery is 0
+    if (status === 'active') {
+      let targetNode;
+      if (!isConnected()) {
+        targetNode = seedNodes.find(n => n.nodeId === nodeId);
+      } else {
+        targetNode = await SensorNode.findOne({ nodeId });
+      }
+      if (targetNode && targetNode.battery <= 0) {
+        return res.status(400).json({ success: false, message: 'Cannot activate node with depleted battery (0%)' });
+      }
+    }
+
     let updatedNode;
     if (!isConnected()) {
       const node = seedNodes.find(n => n.nodeId === nodeId);
@@ -273,22 +286,31 @@ exports.receiveTelemetry = async (req, res, next) => {
     if (!isConnected()) {
       const node = seedNodes.find(n => n.nodeId === nodeId);
       if (!node) return res.status(404).json({ success: false, message: 'Node not found' });
-      if (battery !== undefined) node.battery = battery;
+      if (battery !== undefined) {
+        node.battery = battery;
+        if (battery <= 0) {
+          node.status = 'inactive';
+        }
+      }
       if (rssi !== undefined) node.rssi = rssi;
       if (lqi !== undefined) node.lqi = lqi;
       if (sensors) node.sensors = { ...node.sensors, ...sensors };
       node.lastUpdate = new Date();
       updatedNode = node;
     } else {
+      const updateData = { 
+        battery, 
+        rssi, 
+        lqi, 
+        sensors,
+        lastUpdate: new Date() 
+      };
+      if (battery !== undefined && battery <= 0) {
+        updateData.status = 'inactive';
+      }
       updatedNode = await SensorNode.findOneAndUpdate(
         { nodeId },
-        { 
-          battery, 
-          rssi, 
-          lqi, 
-          sensors,
-          lastUpdate: new Date() 
-        },
+        updateData,
         { new: true }
       );
       if (!updatedNode) {
