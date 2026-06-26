@@ -355,7 +355,7 @@ export default function AnalyticsDashboard() {
                 {/* Draw coverage radius around active nodes */}
                 {nodes.map((node) => {
                   const pos = projectLatLng(node.location.lat, node.location.lng);
-                  if (node.status === 'dead' || node.status === 'inactive') return null;
+                  if (node.status === 'dead' || node.status === 'inactive' || node.battery <= 0) return null;
 
                   const radius = 30 + (Math.max(-100, Math.min(-30, node.rssi)) + 100) * 0.5;
 
@@ -379,7 +379,7 @@ export default function AnalyticsDashboard() {
                     a => a.sourceNodeId === node.nodeId && a.severity === 'critical'
                   );
 
-                  const isOffline = node.status === 'dead' || node.status === 'inactive';
+                  const isOffline = node.status === 'dead' || node.status === 'inactive' || node.battery <= 0;
 
                   return (
                     <g key={`marker-${node.nodeId}`}>

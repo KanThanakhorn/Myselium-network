@@ -10,8 +10,8 @@ const Statusbar: React.FC = () => {
   
   // Calculate states dynamically from active application state
   const totalNodesCount = nodes.length;
-  const onlineNodesCount = nodes.filter(n => n.status === 'active').length;
-  const offlineNodesCount = nodes.filter(n => n.status === 'inactive' || n.status === 'dead').length;
+  const onlineNodesCount = nodes.filter(n => n.status === 'active' && n.battery > 0).length;
+  const offlineNodesCount = nodes.filter(n => n.status === 'inactive' || n.status === 'dead' || n.battery <= 0).length;
   const activeAlertsCount = activeAlerts.length;
 
   const avgBattery = React.useMemo(() => {

@@ -431,7 +431,7 @@ export default function NetworkTopology() {
       const isNextHop = routes[selectedNodeObj.nodeId]?.[1] === nId;
       
       let status = 'candidate';
-      if (!nNode || nNode.status === 'dead' || nNode.status === 'inactive') {
+      if (!nNode || nNode.status === 'dead' || nNode.status === 'inactive' || nNode.battery <= 0) {
         status = 'offline';
       } else if (isNextHop) {
         status = 'nexthop';
@@ -596,7 +596,7 @@ export default function NetworkTopology() {
                   const node1 = nodes.find(n => n.nodeId === link.source);
                   const node2 = nodes.find(n => n.nodeId === link.target);
 
-                  const isDisconnected = !node1 || !node2 || node1.status === 'dead' || node2.status === 'dead' || node1.status === 'inactive' || node2.status === 'inactive';
+                  const isDisconnected = !node1 || !node2 || node1.status === 'dead' || node2.status === 'dead' || node1.status === 'inactive' || node2.status === 'inactive' || node1.battery <= 0 || node2.battery <= 0;
                   const averageRSSI = node1 && node2 ? (node1.rssi + node2.rssi) / 2 : -100;
 
                   let strokeColor = 'rgba(16, 185, 129, 0.65)'; // primary green
@@ -649,18 +649,18 @@ export default function NetworkTopology() {
                     a => a.sourceNodeId === node.nodeId && a.severity === 'critical'
                   );
 
-                  const isOffline = node.status === 'dead' || node.status === 'inactive';
+                  const isOffline = node.status === 'dead' || node.status === 'inactive' || node.battery <= 0;
                   const isLowBattery = node.battery < 30;
 
                   let ringColor = 'rgba(16, 185, 129, 0.25)';
                   let circleColor = '#10b981'; // Green active
 
-                  if (hasAlert) {
-                    circleColor = '#ef4444'; // Red fire alert
-                    ringColor = 'rgba(239, 68, 68, 0.5)';
-                  } else if (isOffline) {
+                  if (isOffline) {
                     circleColor = '#9ca3af'; // Gray offline
                     ringColor = 'rgba(156, 163, 175, 0.2)';
+                  } else if (hasAlert) {
+                    circleColor = '#ef4444'; // Red fire alert
+                    ringColor = 'rgba(239, 68, 68, 0.5)';
                   } else if (isLowBattery) {
                     circleColor = '#f59e0b'; // Amber low battery
                     ringColor = 'rgba(245, 158, 11, 0.4)';
@@ -966,7 +966,7 @@ export default function NetworkTopology() {
                   const hasPath = routes[node.nodeId] && routes[node.nodeId].length > 0;
                   const nextHop = routes[node.nodeId]?.[1] || '—';
                   const weightVal = weights[node.nodeId] ? weights[node.nodeId].toFixed(4) : '0.0000';
-                  const isOffline = node.status === 'dead' || node.status === 'inactive';
+                  const isOffline = node.status === 'dead' || node.status === 'inactive' || node.battery <= 0;
                   
                   let statusLabel = 'ปกติ';
                   let statusClass = 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20';
