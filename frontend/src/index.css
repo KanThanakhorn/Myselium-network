@@ -4,29 +4,32 @@
 
 @theme {
   --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  
+
   /* Semantic Design Tokens mapped to CSS variables */
   --color-bg-app: var(--bg-app);
   --color-bg-surface: var(--bg-surface);
   --color-bg-surface-elevated: var(--bg-surface-elevated);
   --color-bg-surface-modal: var(--bg-surface-modal);
-  
+
   --color-text-main: var(--text-primary);
   --color-text-sub: var(--text-secondary);
   --color-text-muted: var(--text-muted);
-  
+
   --color-border-main: var(--border-color);
   --color-border-focus: var(--border-focus);
-  
+
   --color-shadow-main: var(--shadow-color);
-  
+
   /* Premium Forest / Branding accent colors */
   --color-primary-50: #f0fdf4;
   --color-primary-100: #dcfce7;
-  --color-primary-500: #10b981; /* Emerald-500 */
-  --color-primary-600: #059669; /* Emerald-600 */
-  --color-primary-700: #047857; /* Emerald-700 */
-  
+  --color-primary-500: #10b981;
+  /* Emerald-500 */
+  --color-primary-600: #059669;
+  /* Emerald-600 */
+  --color-primary-700: #047857;
+  /* Emerald-700 */
+
   --color-dark-800: #13151a;
   --color-dark-900: #0d0f12;
   --color-dark-950: #07080a;
@@ -34,7 +37,7 @@
 
 :root {
   --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  
+
   /* Premium Light Theme (Notion / Vercel style) */
   --bg-app: #f6f8fa;
   --bg-surface: #ffffff;
@@ -46,13 +49,14 @@
   --text-secondary: #4b5563;
   --text-muted: #8c95a0;
   --shadow-color: rgba(0, 0, 0, 0.04);
-  
+  --grid-color: rgba(16, 185, 129, 0.035);
+
   font-family: var(--font-sans);
   background-color: var(--bg-app);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 16px; /* Base size reset to 16px for professional proportions */
+  font-size: 24px; /* Scaled to 24px (150%) for a larger dashboard layout */
 }
 
 /* Dark Theme (Charcoal / Deep Slate style - avoiding pure black) */
@@ -67,6 +71,7 @@
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  --grid-color: rgba(52, 211, 153, 0.025);
 }
 
 body {
@@ -123,8 +128,15 @@ textarea:focus-visible {
 
 /* Micro-animations */
 @keyframes pulse-soft {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .animate-pulse-soft {
@@ -132,10 +144,47 @@ textarea:focus-visible {
 }
 
 @keyframes ping-slow {
-  0% { transform: scale(1); opacity: 0.8; }
-  70%, 100% { transform: scale(2); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  70%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
 .animate-ping-slow {
   animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+
+/* Modern Premium Grid Background Pattern */
+.bg-grid-pattern {
+  position: relative;
+}
+
+.bg-grid-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center;
+  mask-image: radial-gradient(circle at 50% 30%, black 30%, transparent 85%);
+  -webkit-mask-image: radial-gradient(circle at 50% 30%, black 30%, transparent 85%);
+  opacity: 0.95;
+}
+
+/* Responsive overrides for arbitrary pixel text sizes to scale with root font-size (rem-based) */
+.text-\[6px\] { font-size: 0.375rem !important; }
+.text-\[7px\] { font-size: 0.4375rem !important; }
+.text-\[8px\] { font-size: 0.5rem !important; }
+.text-\[9px\] { font-size: 0.5625rem !important; }
+.text-\[10px\] { font-size: 0.625rem !important; }
+.text-\[11px\] { font-size: 0.6875rem !important; }

@@ -32,7 +32,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside 
       className={`glass-panel border-r border-border-main transition-all duration-300 ease-in-out flex flex-col ${
-        sidebarOpen ? 'w-64' : 'w-20'
+        sidebarOpen ? 'w-[256px]' : 'w-[80px]'
       } h-screen sticky top-0 z-40 bg-bg-surface`}
     >
       {/* Sidebar Header Brand */}
@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-2.5 py-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -72,14 +72,14 @@ const Sidebar: React.FC = () => {
             <button
               key={item.id}
               onClick={() => dispatch(setActiveTab(item.id))}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group relative border focus:outline-none ${
+              className={`w-full flex items-center gap-2 p-2 rounded-xl transition-all duration-200 group relative border focus:outline-none ${
                 isActive 
                   ? 'bg-primary-500/10 border-primary-500/20 text-primary-600 dark:text-primary-500 font-semibold shadow-[0_1px_2px_rgba(16,185,129,0.05)]' 
                   : 'text-text-sub hover:text-text-main hover:bg-bg-surface-elevated border-transparent'
               }`}
             >
               <Icon 
-                className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${
+                className={`w-4 h-4 transition-transform duration-200 group-hover:scale-105 ${
                   isActive ? 'text-primary-500' : 'text-text-muted group-hover:text-text-sub'
                 }`} 
               />

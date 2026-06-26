@@ -24,10 +24,14 @@ const AlertList: React.FC<AlertListProps> = ({ onSelectAlert }) => {
 
   // Filter alerts based on UI selections
   const filteredAlerts = allAlerts.filter(alert => {
+    const locationString = alert.location 
+      ? `${alert.location.lat},${alert.location.lng}` 
+      : '';
+
     const matchesSearch = 
       alert.alertId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alert.sourceNodeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (alert.location.lat.toString() + ',' + alert.location.lng.toString()).includes(searchTerm);
+      locationString.includes(searchTerm);
 
     const matchesSeverity = filters.severity === 'all' || alert.severity === filters.severity;
 
@@ -217,9 +221,11 @@ const AlertList: React.FC<AlertListProps> = ({ onSelectAlert }) => {
                           <span className="text-xs font-mono font-bold text-text-main">
                             {alert.sourceNodeId}
                           </span>
-                          <span className="text-[9px] text-text-muted flex items-center gap-0.5">
-                            <MapPin size={9} /> ({alert.location.lat.toFixed(3)}, {alert.location.lng.toFixed(3)})
-                          </span>
+                          {alert.location && (
+                            <span className="text-[9px] text-text-muted flex items-center gap-0.5">
+                              <MapPin size={9} /> ({alert.location.lat.toFixed(3)}, {alert.location.lng.toFixed(3)})
+                            </span>
+                          )}
                         </div>
                       </td>
 

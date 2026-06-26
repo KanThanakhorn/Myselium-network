@@ -539,11 +539,21 @@ export default function NetworkTopology() {
               {/* Reusable definitions for glow and arrowheads */}
               <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  {/* Minor Grid Lines */}
+                  <path 
+                    d="M 20 0 L 20 40 M 0 20 L 40 20" 
+                    fill="none" 
+                    stroke={darkMode ? "rgba(52, 211, 153, 0.02)" : "rgba(16, 185, 129, 0.025)"} 
+                    strokeWidth="0.8" 
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  {/* Major Grid Lines */}
                   <path 
                     d="M 40 0 L 0 0 0 40" 
                     fill="none" 
-                    stroke={darkMode ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.02)"} 
-                    strokeWidth="1" 
+                    stroke={darkMode ? "rgba(52, 211, 153, 0.05)" : "rgba(16, 185, 129, 0.065)"} 
+                    strokeWidth="1.2" 
+                    vectorEffect="non-scaling-stroke"
                   />
                 </pattern>
                 
@@ -581,10 +591,17 @@ export default function NetworkTopology() {
                   </feMerge>
                 </filter>
               </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
 
               {/* Transform Group for Zoom & Pan */}
               <g transform={`translate(${offset.x}, ${offset.y}) scale(${scale})`}>
+                {/* Interactive Panning/Zooming Grid Background */}
+                <rect 
+                  x={-width * 15} 
+                  y={-height * 15} 
+                  width={width * 31} 
+                  height={height * 31} 
+                  fill="url(#grid)" 
+                />
 
 
                 {/* 1. Draw Mesh connections */}

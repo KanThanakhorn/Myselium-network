@@ -122,7 +122,9 @@ const AlertModal: React.FC<AlertModalProps> = ({ alert: propAlert, onClose }) =>
               <div className="flex flex-col">
                 <span className="text-[9px] font-mono font-bold text-text-muted uppercase">พิกัดทางภูมิศาสตร์</span>
                 <span className="text-xs font-bold text-text-main mt-1">
-                  ({alert.location.lat.toFixed(5)}, {alert.location.lng.toFixed(5)})
+                  {alert.location 
+                    ? `(${alert.location.lat.toFixed(5)}, ${alert.location.lng.toFixed(5)})`
+                    : '(ไม่พบข้อมูลพิกัด)'}
                 </span>
                 <span className="text-[11px] text-text-sub mt-0.5">พื้นที่ป่าดอยสุเทพ</span>
               </div>
