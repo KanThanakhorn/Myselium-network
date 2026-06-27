@@ -471,28 +471,28 @@ export default function NetworkTopology() {
         <div className="glass-panel rounded-3xl p-5 lg:col-span-2 relative overflow-hidden flex flex-col items-center bg-bg-surface-elevated/20 border-border-main">
 
           {/* Canvas Legend */}
-          <div className="absolute top-4 left-4 bg-bg-surface/90 border border-border-main rounded-2xl p-4 flex flex-col gap-2 text-xs text-text-sub backdrop-blur-md z-10 shadow-md">
+          <div className="absolute top-3 left-3 bg-bg-surface/90 border border-border-main rounded-xl p-2.5 flex flex-col gap-1.5 text-[10px] text-text-sub backdrop-blur-md z-10 shadow-sm max-w-[170px]">
             <span className="font-bold text-text-main mb-0.5">คำอธิบายสถานะ</span>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
               <span>ออนไลน์ปกติ</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
               <span>แบตเตอรี่ต่ำ (&lt; 30%)</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
-              <span>ออฟไลน์ / ตรวจพบไฟไหม้</span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+              <span>ออฟไลน์ / ไฟไหม้</span>
             </div>
-            <div className="border-t border-border-main my-1 pt-1.5 font-bold text-text-main">ลิงก์เส้นทางวิทยุ</div>
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-0.5 bg-emerald-500"></span>
-              <span>เส้นทางหลัก (Primary Path)</span>
+            <div className="border-t border-border-main my-0.5 pt-1 font-bold text-text-main">ลิงก์เส้นทางวิทยุ</div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-0.5 bg-emerald-500 shrink-0"></span>
+              <span>เส้นทางหลัก (Primary)</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-0.5 border-t border-dashed border-amber-500"></span>
-              <span>เส้นทางสำรอง (Backup Path)</span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-0.5 border-t border-dashed border-amber-500 shrink-0"></span>
+              <span>เส้นทางสำรอง (Backup)</span>
             </div>
           </div>
 
