@@ -350,6 +350,9 @@ exports.receiveTelemetry = async (req, res, next) => {
           if (io) {
             io.to('dashboard').emit('new_alert', newAlert);
           }
+          // Send alert notification to Hermes/LINE
+          const { sendAlertNotification } = require('../services/notificationService');
+          sendAlertNotification(newAlert).catch(err => console.error('Notification error:', err));
         }
       } else {
         const activeAlert = require('./alertController').seedAlerts.find(a => a.sourceNodeId === nodeId && a.status === 'active');
@@ -358,6 +361,9 @@ exports.receiveTelemetry = async (req, res, next) => {
           if (io) {
             io.to('dashboard').emit('new_alert', newAlert);
           }
+          // Send alert notification to Hermes/LINE
+          const { sendAlertNotification } = require('../services/notificationService');
+          sendAlertNotification(newAlert).catch(err => console.error('Notification error:', err));
         }
       }
     }

@@ -823,20 +823,20 @@ export default function NetworkTopology() {
         </div>
 
         {/* Selected Node Details Card / Sidebar */}
-        <div className="glass-panel rounded-3xl p-6 flex flex-col justify-between min-h-[350px] bg-bg-surface border-border-main animate-fade-in">
+        <div className="glass-panel rounded-3xl p-4 flex flex-col justify-between min-h-[300px] bg-bg-surface border-border-main animate-fade-in">
           {selectedNodeObj ? (
-            <div className="space-y-6 flex-1 flex flex-col justify-between">
+            <div className="space-y-3.5 flex-1 flex flex-col justify-between">
 
               {/* Header: Node Details */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-text-main font-mono">{selectedNodeObj.nodeId}</span>
                   {selectedNodeObj.status === 'active' ? (
-                    <span className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                       ออนไลน์
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-bg-surface-elevated text-text-muted border border-border-main">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-bg-surface-elevated text-text-muted border border-border-main">
                       ออฟไลน์
                     </span>
                   )}
@@ -852,31 +852,31 @@ export default function NetworkTopology() {
               </div>
 
               {/* Metrics gauges */}
-              <div className="grid grid-cols-2 gap-3.5">
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl py-2 px-3">
                   <span className="text-[10px] font-mono font-bold text-text-muted uppercase">อุณหภูมิ</span>
-                  <div className="text-sm font-extrabold text-text-main mt-1">
+                  <div className="text-sm font-extrabold text-text-main mt-0.5">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.temp.toFixed(1)}°C`}
                   </div>
                 </div>
 
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4">
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl py-2 px-3">
                   <span className="text-[10px] font-mono font-bold text-text-muted uppercase">ความหนาแน่นควัน</span>
-                  <div className="text-sm font-extrabold text-text-main mt-1">
+                  <div className="text-sm font-extrabold text-text-main mt-0.5">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.smoke} ppm`}
                   </div>
                 </div>
 
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4">
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl py-2 px-3">
                   <span className="text-[10px] font-mono font-bold text-text-muted uppercase">ความชื้น</span>
-                  <div className="text-sm font-extrabold text-text-main mt-1">
+                  <div className="text-sm font-extrabold text-text-main mt-0.5">
                     {selectedNodeObj.status === 'dead' ? '—' : `${selectedNodeObj.sensors.humidity.toFixed(0)}%`}
                   </div>
                 </div>
 
-                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl p-4 flex flex-col justify-between">
+                <div className="bg-bg-surface-elevated/40 border border-border-main rounded-2xl py-2 px-3 flex flex-col justify-between">
                   <span className="text-[10px] font-mono font-bold text-text-muted uppercase">ระดับแบตเตอรี่</span>
-                  <div className="text-sm font-extrabold text-text-main mt-1 flex items-center gap-1.5">
+                  <div className="text-sm font-extrabold text-text-main mt-0.5 flex items-center gap-1.5">
                     <Battery size={15} className={selectedNodeObj.battery < 20 ? 'text-red-500 animate-pulse' : 'text-emerald-500'} />
                     {selectedNodeObj.battery}%
                   </div>
@@ -884,7 +884,7 @@ export default function NetworkTopology() {
               </div>
 
               {/* Link Details */}
-              <div className="space-y-3 border-t border-border-main pt-5">
+              <div className="space-y-1.5 border-t border-border-main pt-3">
                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">สัญญาณวิทยุเชื่อมต่อ</span>
                 <div className="flex justify-between text-sm font-mono text-text-sub font-semibold">
                   <span className="flex items-center gap-1.5"><Signal size={14} /> RSSI</span>
@@ -897,7 +897,7 @@ export default function NetworkTopology() {
               </div>
 
               {/* Mycelium Weight Details */}
-              <div className="space-y-3 border-t border-border-main pt-5">
+              <div className="space-y-1.5 border-t border-border-main pt-3">
                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">ระบบหาเส้นทาง Mycelium</span>
                 <div className="flex justify-between text-sm font-mono text-text-sub font-semibold">
                   <span className="flex items-center gap-1.5"><Workflow size={14} className="text-primary-500" /> ค่าน้ำหนักตัดสินใจ (Weight)</span>
@@ -911,11 +911,11 @@ export default function NetworkTopology() {
 
               {/* Action Buttons: Calibrate/Toggle */}
               {user && (user.role === 'admin' || user.role === 'ranger') ? (
-                <div className="flex gap-3 border-t border-border-main pt-5 mt-auto animate-fade-in">
+                <div className="flex gap-2 border-t border-border-main pt-3 mt-auto animate-fade-in">
                   <button
                     disabled={isCalibrating || selectedNodeObj.status === 'dead'}
                     onClick={() => handleRecalibrate(selectedNodeObj.nodeId)}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold bg-bg-surface hover:bg-bg-surface-elevated text-text-main border border-border-main transition-colors disabled:opacity-50 focus:outline-none cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-bg-surface hover:bg-bg-surface-elevated text-text-main border border-border-main transition-colors disabled:opacity-50 focus:outline-none cursor-pointer"
                   >
                     <RefreshCw className={isCalibrating ? 'animate-spin' : ''} size={14} />
                     {isCalibrating ? 'ปรับเทียบ...' : 'ปรับเทียบใหม่'}
@@ -924,7 +924,7 @@ export default function NetworkTopology() {
                   <button
                     disabled={selectedNodeObj.battery <= 0}
                     onClick={() => handleToggleStatus(selectedNodeObj)}
-                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold text-white transition-colors focus:outline-none cursor-pointer ${selectedNodeObj.status === 'active'
+                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-white transition-colors focus:outline-none cursor-pointer ${selectedNodeObj.status === 'active'
                         ? 'bg-red-500 hover:bg-red-600'
                         : 'bg-emerald-500 hover:bg-emerald-600'
                       } disabled:opacity-40 disabled:cursor-not-allowed`}
@@ -936,7 +936,7 @@ export default function NetworkTopology() {
                   </button>
                 </div>
               ) : (
-                <div className="p-4 bg-bg-surface-elevated/40 border border-border-main rounded-xl text-xs text-text-muted leading-normal mt-4">
+                <div className="p-2.5 bg-bg-surface-elevated/40 border border-border-main rounded-xl text-xs text-text-muted leading-normal mt-2">
                   🔒 เข้าสู่ระบบในฐานะเจ้าหน้าที่หรือผู้ดูแลระบบเพื่อแก้ไขค่าอุปกรณ์
                 </div>
               )}

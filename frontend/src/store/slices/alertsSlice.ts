@@ -92,11 +92,17 @@ export const fetchActiveAlerts = createAsyncThunk(
 
 export const acknowledgeAlert = createAsyncThunk(
   'alerts/acknowledge',
-  async ({ alertId, rangerId }: { alertId: string; rangerId: string }) => {
+  async ({ alertId, rangerId }: { alertId: string; rangerId: string }, thunkAPI) => {
     try {
+      const state: any = thunkAPI.getState();
+      const token = state.user.token;
+
       const response = await fetch(`/api/alerts/${alertId}/acknowledge`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ rangerId }),
       });
       if (!response.ok) throw new Error('Failed to acknowledge alert');
@@ -112,12 +118,19 @@ export const acknowledgeAlert = createAsyncThunk(
 export const resolveAlert = createAsyncThunk(
   'alerts/resolve',
   async (
-    { alertId, rangerId, actionTaken }: { alertId: string; rangerId: string; actionTaken: string }
+    { alertId, rangerId, actionTaken }: { alertId: string; rangerId: string; actionTaken: string },
+    thunkAPI
   ) => {
     try {
+      const state: any = thunkAPI.getState();
+      const token = state.user.token;
+
       const response = await fetch(`/api/alerts/${alertId}/resolve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ rangerId, actionTaken }),
       });
       if (!response.ok) throw new Error('Failed to resolve alert');

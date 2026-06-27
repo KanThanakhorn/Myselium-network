@@ -33,6 +33,7 @@ function App() {
   const darkMode = useSelector((state: RootState) => state.ui.darkMode);
   const nodes = useSelector((state: RootState) => state.nodes.list);
   const activeAlerts = useSelector((state: RootState) => state.alerts.active);
+  const token = useSelector((state: RootState) => state.user.token);
   const { isConnected } = useSocket();
 
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
@@ -67,26 +68,60 @@ function App() {
     dispatch(addNotification({ message: 'กำลังเริ่มการดาวน์โหลดรายงาน...', type: 'success' }));
   };
 
-  const triggerTestSimulation = () => {
-    // Generate a mock critical fire alert for testing the system
-    const testAlert: Alert = {
-      _id: Math.random().toString(36).substring(2, 9),
-      alertId: `ALT-${Math.floor(1000 + Math.random() * 9000)}`,
-      severity: 'critical',
-      sourceNodeId: 'node-04',
-      location: { lat: 18.8112, lng: 98.9205 },
-      sensorType: 'smoke',
-      value: 680,
-      threshold: 400,
-      timestamp: new Date().toISOString(),
-      status: 'active'
-    };
+  const triggerTestSimulation = async () => {
+    try {
+      dispatch(addNotification({
+        message: '📡 กำลังเตรียมการจำลองเหตุการณ์ (ตรวจสอบและล้างประวัติเตือนภัยเก่า)...',
+        type: 'info'
+      }));
 
-    dispatch(addRealtimeAlert(testAlert));
-    dispatch(addNotification({
-      message: `⚠️ วิกฤต: ตรวจพบไฟไหม้/กลุ่มควันหนาแน่น ที่จุด ${testAlert.sourceNodeId}!`,
-      type: 'error'
-    }));
+      // 1. Fetch active alerts and resolve any existing active alert for node-04
+      const alertsRes = await fetch('/api/alerts/active');
+      if (alertsRes.ok) {
+        const activeAlertsList = await alertsRes.json();
+        const node04Alerts = activeAlertsList.filter((a: any) => a.sourceNodeId === 'node-04' && a.status === 'active');
+        for (const alert of node04Alerts) {
+          await fetch(`/api/alerts/${alert.alertId}/resolve`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({ rangerId: 'system', actionTaken: 'Auto-resolved for simulation testing' })
+          });
+        }
+      }
+
+      // 2. Send a critical telemetry POST request to the backend to trigger a real alert & LINE notification
+      const response = await fetch('/api/nodes/node-04/telemetry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          battery: 92,
+          rssi: -38,
+          lqi: 250,
+          sensors: {
+            temp: 48.0,
+            humidity: 30.0,
+            smoke: 550,
+            pm25: 120
+          }
+        })
+      });
+      if (!response.ok) {
+        throw new Error('การส่งข้อมูลจำลองล้มเหลว');
+      }
+      dispatch(addNotification({
+        message: '🔥 ส่งข้อมูลจำลองไฟป่าไปยังโหนด node-04 สำเร็จ! ตรวจพบค่าวิกฤตควันไฟและอุณหภูมิสูงแล้ว',
+        type: 'error'
+      }));
+    } catch (err: any) {
+      console.error(err);
+      dispatch(addNotification({
+        message: '❌ ไม่สามารถจำลองสัญญาณไฟป่าได้ เนื่องจากเชื่อมต่อเซิร์ฟเวอร์ไม่ได้',
+        type: 'error'
+      }));
+    }
   };
 
   const hasActiveFireAlert = activeAlerts.some(a => a.severity === 'critical' && a.status === 'active' && !a.acknowledgedAt);
